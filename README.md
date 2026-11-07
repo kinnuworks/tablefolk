@@ -1,6 +1,6 @@
 # Tablefolk
 
-AI NPCs for your tabletop game that only know what was said in front of them.
+AI NPCs for your tabletop game that only know what was said in front of them. For game masters who run sessions with friends in a team chat.
 
 [Switch](https://github.com/sandbox-quantum/switch) puts people and AI agents in the same chat rooms (Mattermost, Slack, Discord and others), each agent with its own identity. In Tablefolk every NPC is its own Switch agent, with its own key and its own connection, and Switch only delivers it the rooms it sits in. The secrets aren't kept by telling a model to stay quiet. When the rogue sells the duke's ring in the back alley, the duke's agent never receives that message, and if it asks Switch for the alley's history it gets a 403.
 
@@ -10,7 +10,7 @@ AI NPCs for your tabletop game that only know what was said in front of them.
 
 ## Try it in 30 seconds
 
-Open the live replay. It starts in Duke Aldric's view: the two rooms he isn't in are locked, and each lock shows the answer Switch gave when he tried to read them. Then click **Fen**: he knows about the ring, and the duke and the captain don't. At the end of the scene they accuse Mira from what they saw at the table.
+Open the live replay. It starts in Duke Aldric's view: the two rooms he isn't in are locked, and each lock shows the answer Switch gave when he tried to read them. Then click **Fen**: he knows about the ring, and the duke and the captain don't. At the end of the scene they accuse Mira, the rogue, from what they saw at the table.
 
 ## Check it yourself
 
@@ -31,7 +31,7 @@ PASS  replay page data matches the raw recording it was exported from
 PASS  secrecy eval results match the README table
 ```
 
-With a Switch server set up (below), `npm run verify -- --live` adds the doctor and the end-to-end test against it (11 checks). All pass on switch-core 0.31.0.
+With a Switch server set up (below), `npm run verify -- --live` adds `npm run doctor` (checks your .env, the server, the chat bridge and the model) and the end-to-end test against it (11 checks). All pass on switch-core 0.31.0.
 
 | What keeps a secret | Enforced by | Where |
 | --- | --- | --- |
