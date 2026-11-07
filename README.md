@@ -98,7 +98,7 @@ npm run test:e2e    # against a real Switch server
 npm run doctor      # checks .env, the server, the token, the chat bridge, Mattermost and the model
 ```
 
-CI runs `npm run verify` and the unit tests with coverage on every push.
+The CI workflow runs `npm run verify` and the unit tests with coverage on every push. GitHub hasn't started it yet because the account is locked over billing, so for now run `npm run verify` yourself.
 
 The 42 unit tests cover:
 
