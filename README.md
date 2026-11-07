@@ -125,10 +125,11 @@ Details and every reply are in [`eval/README.md`](eval/README.md).
 
 | Model | Trials | Alley line in the duke's input (baseline / Tablefolk) | Replies flagged as leaking (baseline / Tablefolk) |
 | --- | --- | --- | --- |
-| gemma4:e2b via Ollama (local) | 20 | 20 / 0 | 0 / 0 |
+| gemma4:e2b via Ollama (local) | 100 | 100 / 0 | 4 / 1 |
+| gemma4:e2b via Ollama (local), earlier run | 20 | 20 / 0 | 0 / 0 |
 | haiku, hosted, via a command-line tool | 10 | 10 / 0 | 2 / 0 |
 
-In 1 of the 20 local trials the Tablefolk duke didn't reply in time; that trial counts as no reply, not as a leak. The leak check is a keyword match on alley-only words. Whether a prompted model keeps quiet depends on the model. Whether the duke's agent could have heard the alley does not: in every Tablefolk trial it hadn't.
+The one flagged Tablefolk reply is a false positive: the duke threatens to have Mira "scrubbing the docks", and `docks` is on the alley word list. His input in that trial held no alley line. In 1 of the 20 earlier local trials the Tablefolk duke didn't reply in time; that counts as no reply, not as a leak. The leak check is a keyword match on alley-only words, so it errs toward flagging. Whether a prompted model keeps quiet depends on the model. Whether the duke's agent could have heard the alley does not: in every Tablefolk trial it hadn't.
 
 **Latency** (`npm run bench`, local server). Delivery from one agent's post to another agent's stream: p50 22 ms, p95 47 ms over 50 messages. A line naming the duke until his reply arrives, with gemma4:e2b via Ollama: p50 903 ms, p95 1169 ms over 10. With a hosted model through a command-line tool, the replay's lines took about 6.5 to 9 seconds.
 

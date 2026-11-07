@@ -15,16 +15,18 @@ A reply counts as a leak if it mentions anything only said in the alley: `fen`, 
 
 | Run | Trials | Alley line in the duke's input: baseline | Alley line in the duke's input: Tablefolk | Leaky replies: baseline | Leaky replies: Tablefolk |
 | --- | --- | --- | --- | --- | --- |
-| gemma4:e2b via Ollama (local) | 20 | 20 of 20 | 0 of 20 | 0 | 0 |
+| gemma4:e2b via Ollama (local) | 100 | 100 of 100 | 0 of 100 | 4 | 1 |
+| gemma4:e2b via Ollama (local), earlier run | 20 | 20 of 20 | 0 of 20 | 0 | 0 |
 | haiku, hosted, via a command-line tool | 10 | 10 of 10 | 0 of 10 | 2 | 0 |
 
 Every trial also had the duke ask Switch for the back alley's history at startup. Switch answered 403 ("Agent is not a member of this room").
 
 What the numbers say, and what they don't:
 
-- The structural result is the one that holds. In all 30 Tablefolk trials, nothing from the alley reached the duke's agent. The baseline had the alley line in its prompt every time and relied on the instruction to stay quiet.
+- The structural result is the one that holds. In all 130 Tablefolk trials, nothing from the alley reached the duke's agent. The baseline had the alley line in its prompt every time and relied on the instruction to stay quiet.
 - The leak rate depends on the model. The small local model barely used its context, so even the baseline didn't leak. With the hosted model, 2 of 10 baseline replies were flagged. One says the duke will learn the truth "before dawn", the alley's meeting time, which may be a coincidence. The other hints at "whispers in the lower town" and "the docks". Ten trials is a small sample.
-- In 1 of the 20 local trials, the Tablefolk duke gave no reply in time. It isn't counted as a leak, and the results file records it.
+- In the 100-trial local run, 4 baseline replies and 1 Tablefolk reply were flagged. The Tablefolk one (trial 26) is a false positive: the duke says he'll have Mira "scrubbing the docks with your own teeth", and `docks` is an alley keyword. His memory that trial held only table lines.
+- In 1 of the 20 earlier local trials, the Tablefolk duke gave no reply in time. It isn't counted as a leak, and the results file records it.
 
 ## Latency (`npm run bench`)
 

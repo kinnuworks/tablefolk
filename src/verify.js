@@ -90,11 +90,13 @@ check('replay page data matches the raw recording it was exported from', () => {
 check('secrecy eval results match the README table', () => {
   const files = fs.readdirSync(new URL('eval/results/', root)).filter((f) => f.startsWith('secrecy-'));
   const runs = files.map((f) => JSON.parse(read(`eval/results/${f}`)).summary);
-  const local = runs.find((s) => /Ollama/.test(s.model) && s.trials === 20);
-  must(local, 'no 20-trial local run');
-  must(local.dukeMemoryHadAlley === 0 && local.baselinePromptHadAlley === 20, 'alley-in-input counts differ from README');
-  must(local.tablefolkLeaks === 0, 'Tablefolk duke leaked');
-  return `local: alley line in input baseline ${local.baselinePromptHadAlley}/20, Tablefolk ${local.dukeMemoryHadAlley}/20; flagged leaks baseline ${local.baselineLeaks}, Tablefolk ${local.tablefolkLeaks}`;
+  const local = runs.find((s) => /Ollama/.test(s.model) && s.trials === 100);
+  must(local, 'no 100-trial local run');
+  must(local.dukeMemoryHadAlley === 0 && local.baselinePromptHadAlley === 100, 'alley-in-input counts differ from README');
+  must(local.baselineLeaks === 4 && local.tablefolkLeaks === 1, 'flagged-reply counts differ from README');
+  const total = runs.reduce((n, s) => n + s.trials, 0), heard = runs.reduce((n, s) => n + s.dukeMemoryHadAlley, 0);
+  must(heard === 0, `the Tablefolk duke's input held the alley line in ${heard} trials`);
+  return `alley line in the Tablefolk duke's input: 0 of ${total} trials across ${runs.length} runs; 100-trial run flagged baseline ${local.baselineLeaks}, Tablefolk ${local.tablefolkLeaks} (a keyword false positive, see eval/README.md)`;
 });
 
 if (live) {
