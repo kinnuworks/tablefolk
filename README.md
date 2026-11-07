@@ -27,7 +27,7 @@ npm run table -- --gm sam --rogue rowan --players rowan,juno
 `npm run table` registers the Keeper and the three NPCs as Switch agents, runs the Switch room template to create the four rooms on Mattermost as one linked group with the right people and agents in each, and runs every agent. Then play in Mattermost:
 
 - Talk to an NPC by name: `Duke Aldric, may I see your ring?`
-- `roll 1d20+3` rolls dice. `hp Mira -4` tracks hit points. The Keeper does both in code.
+- `roll 1d20+3` rolls dice. `hp Mira -4` tracks hit points. The Keeper does both in code and keeps a party sheet as a Switch room document in the table room. Rolls made in a private room stay off the sheet.
 - `aside fen @rowan` has Switch open a new private room with Fen, Rowan and the GM, right then.
 
 Without people around, `npm run demo` plays a short scripted scene with stand-in players on your server and records it. `npm run export recordings/<file>.jsonl` turns a recording into `viewer/session.json` for the replay page.
@@ -43,20 +43,34 @@ Without people around, `npm run demo` plays a short scripted scene with stand-in
 
 - `src/switch-client.js` speaks the Switch agent protocol: an SSE stream down, HTTP up, a heartbeat every 2 seconds. Each NPC opens one connection per room it belongs to.
 - `src/npc.js` is the NPC. Its memory is the list of messages its own connections delivered. That list is all its prompt contains, so it can't leak a room it was never sent. When it starts, it asks Switch for every room it is not in and records the refusal.
-- `src/keeper.js` is an agent with no model. Dice, hit points and side rooms are rules, so they run in code.
+- `src/keeper.js` is an agent with no model. Dice, hit points, the party sheet (a Switch room document) and side rooms are rules, so they run in code.
 - `src/recorder.js` writes one line per delivery: which agent received which message, in which room. The replay page reads this, so "through the duke's eyes" is what the duke's agent was actually sent.
-- `templates/greywater.template.yaml` is the Switch room template `npm run table` runs: four rooms in one linked group, with the existing NPC agents seated in them. Without people (`npm run demo`, `npm test`) the rooms are agent-only and made one by one.
+- `templates/greywater.template.yaml` is the Switch room template `npm run table` runs: four rooms in one linked group, with the existing NPC agents seated in them. Without people (`npm run demo`, `npm run test:e2e`) the rooms are agent-only and made one by one.
 
 ## Tests
 
-`npm test` runs against a real Switch server. Stand-in player agents talk in agent-only rooms, and the test checks that:
+`npm test` runs the unit tests, and CI runs them on every push. They need no server and no model:
+
+- the protocol client against a fake Switch bridge: frames split across chunks, resuming with `Last-Event-ID` after a dropped socket, reopening when a heartbeat gets a 404, resending an operation after a 409,
+- the Keeper: dice parsing, hit points, the party sheet leaving out private rolls, `aside` creating a private room with the right people,
+- the NPC: when it counts as named, that Keeper commands and Switch's join greetings never wake it, that its prompt holds only its own memory, that it remembers its own lines,
+- the recording behind the live replay: no NPC was ever delivered a message from a room it isn't in, and every refusal is a 403.
+
+`npm run test:e2e` runs against a real Switch server. Stand-in player agents talk in agent-only rooms, and it checks that:
 
 - Switch refuses each NPC every room it isn't in (it asks, and expects a 403),
-- dice rolls land in the room,
+- dice rolls land in the room, and a player at the table can read the party sheet,
 - the duke answers at the table and Fen answers in the alley,
 - the alley message never reaches the duke or the captain.
 
-How fast an NPC answers depends on the model. In the e2e test, with a local gemma4 model, replies took about 3 to 4.5 seconds. In the recorded replay, which used a hosted model called through a command-line tool, they took about 6.5 to 9 seconds.
+How fast an NPC answers depends on the model. In the e2e test, with a local gemma4 model, replies took about 1 to 4.5 seconds. In the recorded replay, which used a hosted model called through a command-line tool, they took about 6.5 to 9 seconds.
+
+## Things I found in Switch along the way
+
+- When several of an agent's connections open at the same moment, switch-core 0.31.0 sometimes answers the stream open with a 500 (`RuntimeError: No incarnation drawn: a connection is opened inside a recorded move`). The client retries and play carries on.
+- Switch's refusal breaker answers 429 after eight identical refused requests in two minutes, with a cooldown that doubles. The secrecy check reads the NPC's own room between checks so it doesn't trip it.
+- An agent's stream doesn't echo the agent's own posts, so each NPC adds its own lines to its memory itself.
+- Switch keeps the `!` prefix for its own commands, so the Keeper's commands are plain words.
 
 ## Limits
 

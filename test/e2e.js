@@ -42,11 +42,14 @@ keeper.npcs = npcs;
 await keeper.start();
 for (const n of npcs) await n.start();
 await Promise.all(npcs.map((n) => n.secrecyDone));
-const player = connect(mira, 'mira', [state.rooms.table.id, state.rooms.alley.id]);
-const heard = [];
-player.onEvent((k, f) => k === 'message' && heard.push({ room: label(f.room_id), who: f.payload.sender_name, body: f.payload.body, t: Date.now() }));
-await player.start();
-const say = async (room, text) => { const t = Date.now(); await player.post(state.rooms[room].id, text); return t; };
+// One connection per room: Switch lets only one connection of an agent hold a room.
+const heard = [], playerConns = {};
+for (const room of ['table', 'alley']) {
+  const c = connect(mira, `mira@${room}`, [state.rooms[room].id]);
+  c.onEvent((k, f) => k === 'message' && heard.push({ room: label(f.room_id), who: f.payload.sender_name, body: f.payload.body, t: Date.now() }));
+  await c.start(); playerConns[room] = c;
+}
+const say = async (room, text) => { const t = Date.now(); await playerConns[room].post(state.rooms[room].id, text); return t; };
 const results = [];
 const check = (name, fn) => { fn(); results.push(name); console.log('ok -', name); };
 
@@ -63,6 +66,9 @@ check('no NPC could read a room it is not in', () => assert.ok(!sink.events.some
 await say('table', 'roll 2d6+3');
 const dice = await until(() => heard.find((h) => h.who === 'table-keeper' && h.body.includes('2d6')), 15000, 'dice');
 check('dice roll lands in the room', () => assert.match(dice.body, /= \*\*\d+\*\*/));
+await until(() => keeper.sheetId, 15000, 'party sheet');
+const docs = await playerConns.table.op('load_internal_documents', { ids: [keeper.sheetId] });
+check('the party sheet is a room document a player at the table can read', () => assert.match(JSON.stringify(docs), /party-sheet[\s\S]*Rolls at the table/));
 
 // 3. An NPC answers when named, in the room it was named in.
 let t0 = await say('table', 'Duke Aldric, that is a fine ring. May I see it?');
@@ -80,5 +86,5 @@ check('the whisper never reached the duke or the captain', () => {
 
 console.log(`\n${results.length} checks passed`);
 for (const c of [keeper, ...npcs]) for (const conn of c.conns.values()) conn.stop();
-player.stop();
+for (const c of Object.values(playerConns)) c.stop();
 process.exit(0);

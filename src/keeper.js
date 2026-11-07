@@ -19,6 +19,8 @@ export class Keeper {
     this.conns = new Map();
     this.seen = new Set(); // one message can arrive on more than one connection
     this.hp = state.hp || {};
+    this.tableRolls = [];
+    this.sheetId = null;
     this.npcs = [];
   }
 
@@ -46,13 +48,44 @@ export class Keeper {
       if (DICE.test(body)) {
         const r = roll(body);
                 const mod = r.mod ? ` ${r.mod > 0 ? '+' : '-'} ${Math.abs(r.mod)}` : '';
-        return this.say(frame.room_id, `🎲 ${who} rolls ${r.n}d${r.sides}${mod}: [${r.rolls.join(', ')}]${mod} = **${r.total}**`);
+        const line = `🎲 ${who} rolls ${r.n}d${r.sides}${mod}: [${r.rolls.join(', ')}]${mod} = **${r.total}**`;
+        await this.say(frame.room_id, line);
+        if (frame.room_id === this.state.rooms.table?.id) { this.tableRolls.push(line.slice(3)); await this.updateSheet(); }
+        return;
       }
-      if (/^hp(\s|$)/i.test(body)) return this.say(frame.room_id, this.hpCommand(body));
+      if (/^hp(\s|$)/i.test(body)) {
+        await this.say(frame.room_id, this.hpCommand(body));
+        if (frame.room_id === this.state.rooms.table?.id) await this.updateSheet();
+        return;
+      }
       if (/^aside\s/i.test(body)) return this.aside(frame, body, who);
     } catch (e) {
       console.error(`[keeper] ${e.message}`);
       this.say(frame.room_id, `That didn't work: ${e.message.slice(0, 120)}`).catch(() => {});
+    }
+  }
+
+  // The party sheet is a Switch room document in the table room, so everyone at
+  // the table can open it. Only table rolls go on it: a roll made in a private
+  // room stays in that room.
+  sheetText() {
+    const hp = Object.entries(this.hp);
+    return ['# Party sheet', '', '## Hit points', ...(hp.length ? hp.map(([k, v]) => `- ${k}: ${v}`) : ['- Nobody has taken damage yet.']),
+      '', '## Rolls at the table', ...(this.tableRolls.length ? this.tableRolls.slice(-15).map((l) => `- ${l}`) : ['- No rolls yet.'])].join('\n');
+  }
+
+  async updateSheet() {
+    const conn = this.conns.get(this.state.rooms.table.id);
+    try {
+      if (!this.sheetId) {
+        const made = await conn.op('create_room_document', { name: 'party-sheet', description: 'Hit points and dice rolls at the table, kept by the Keeper.',
+          instructions: 'Read-only for everyone but the Keeper. The Keeper rewrites it after every roll or hit point change at the table.', content: this.sheetText() });
+        this.sheetId = made.document_id;
+      } else {
+        await conn.op('update_room_document', { document_id: this.sheetId, content: this.sheetText() });
+      }
+    } catch (e) {
+      console.error(`[keeper] party sheet: ${e.message}`);
     }
   }
 

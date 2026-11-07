@@ -8,8 +8,11 @@
     "table": "node src/table.js",
     "demo": "node src/demo.js",
     "export": "node src/export.js",
-    "test": "node test/e2e.js",
-    "viewer": "python3 -m http.server 4321 -d viewer"
+    "test": "node --test test/unit/",
+    "viewer": "python3 -m http.server 4321 -d viewer",
+    "test:e2e": "node test/e2e.js"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }
