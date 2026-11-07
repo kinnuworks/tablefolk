@@ -24,8 +24,9 @@ check('type check (tsc --checkJs over src, campaigns, eval)', () => {
 });
 
 check('unit tests (protocol client, NPC, Keeper, model adapters, recording)', () => {
-  const r = run('node', ['--test', 'test/unit/']);
-  const n = (k) => Number((r.stdout.match(new RegExp(`ℹ ${k} (\\d+)`)) || [])[1] ?? NaN);
+  // Spec reporter everywhere: without a TTY (CI) node picks TAP, which prints "# pass" instead.
+  const r = run('node', ['--test', '--test-reporter=spec', 'test/unit/']);
+  const n = (k) => Number((r.stdout.match(new RegExp(`(?:ℹ|#) ${k} (\\d+)`)) || [])[1] ?? NaN);
   must(r.status === 0 && n('fail') === 0, `${n('fail')} failed`);
   return `${n('pass')} of ${n('tests')} pass`;
 });
