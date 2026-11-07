@@ -74,6 +74,7 @@ for (const [who, room, text] of script) {
   while (Date.now() < end && npcs.some((n) => n.busy || n.pending)) await wait(300);
   await wait(1200);
 }
+await Promise.all(npcs.map((n) => n.secrecyDone));
 await wait(2000);
 console.log('Done.');
 process.exit(0);

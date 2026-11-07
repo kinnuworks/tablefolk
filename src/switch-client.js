@@ -3,7 +3,7 @@
 import { randomUUID } from 'node:crypto';
 
 export class SwitchAgent {
-  constructor({ baseUrl, agentId, apiKey, name, scope = 'all', filter = 'all', rooms = [] }) {
+  constructor({ baseUrl, agentId, apiKey, name, scope = 'single', filter = 'all', rooms = [] }) {
     Object.assign(this, { baseUrl: baseUrl.replace(/\/$/, ''), agentId, apiKey, name, scope, filter, rooms });
     this.connectionId = randomUUID();
     this.cursor = null;

@@ -68,9 +68,15 @@
   const params = new URLSearchParams(location.search);
   let eye = viewers.some((v) => v.id === params.get('eye')) ? params.get('eye') : 'table-keeper';
   let shown = 0, playing = true, timer = null;
+  const at = params.has('at') ? Number(params.get('at')) : null; // ?at=12 shows the first 12 messages, paused
+  if (at !== null) playing = false;
 
-  // One message can be delivered to many agents. For a viewer, keep the copies that agent received.
-  const forEye = (id) => data.deliveries.filter((d) => d.agent === id);
+  // One message can be delivered to many agents. For a viewer, keep the copies that agent received,
+  // plus its own lines (a stream doesn't echo an agent's own posts back to it).
+  // The GM view is every message anyone at the table received, once each.
+  const everything = (() => { const seen = new Set(); return data.deliveries.filter((d) => !seen.has(d.id) && seen.add(d.id)); })();
+  const forEye = (id) => id === 'table-keeper' ? everything
+    : (() => { const seen = new Set(); return data.deliveries.filter((d) => (d.agent === id || d.sender === id) && !seen.has(d.id) && seen.add(d.id)); })();
 
   const eyes = document.getElementById('eyes');
   for (const v of viewers) {
@@ -83,14 +89,14 @@
   function render(restart) {
     for (const b of eyes.children) b.setAttribute('aria-pressed', String(b.dataset.id === eye));
     const list = forEye(eye);
-    if (restart) shown = playing ? 0 : list.length;
+    if (restart) shown = at !== null ? Math.min(at, list.length) : playing ? 0 : list.length;
     const main = document.getElementById('rooms');
     main.innerHTML = '';
     const isNpc = eye !== 'table-keeper';
-    const missed = isNpc ? data.deliveries.filter((d) => d.agent === 'table-keeper' && !list.some((x) => x.room === d.room)).length : 0;
+    const missed = isNpc ? everything.filter((d) => !list.some((x) => x.room === d.room)).length : 0;
     const summary = document.getElementById('summary');
     summary.innerHTML = isNpc
-      ? `<p><strong>${nameOf(eye)}</strong> received ${list.length} messages. ${missed} messages were said in rooms it is not in, and none of them reached it.</p>`
+      ? `<p><strong>${nameOf(eye)}</strong> heard ${plural(list.filter((d) => d.sender !== eye).length, 'message')} and said ${list.filter((d) => d.sender === eye).length}. ${plural(missed, 'message')} were said in rooms it is not in, and none of them reached it.</p>`
       : `<p>The GM's view: every room at once.</p>`;
     for (const key of roomKeys) {
       const r = data.rooms[key];
@@ -139,6 +145,7 @@
   document.getElementById('foot').textContent = (data.note ? data.note + ' ' : '') + `Recorded on a Switch server. Refusals recorded: ${data.denied.length}. Leaks: ${data.leaks}.`;
   render(true);
 
+  function plural(n, w) { return `${n} ${w}${n === 1 ? '' : 's'}`; }
   function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 })();
 </script>

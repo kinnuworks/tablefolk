@@ -17,6 +17,7 @@ export class Keeper {
   constructor({ creds, connect, state, campaign, recorder, roomLabel }) {
     Object.assign(this, { creds, connect, state, campaign, recorder, roomLabel });
     this.conns = new Map();
+    this.seen = new Set(); // one message can arrive on more than one connection
     this.hp = state.hp || {};
     this.npcs = [];
   }
@@ -37,6 +38,7 @@ export class Keeper {
   async hear(frame) {
     const p = frame.payload || {};
     if (!p.body || isJoinGreeting(p)) return;
+    if (p.message_id) { if (this.seen.has(p.message_id)) return; this.seen.add(p.message_id); }
     this.recorder.delivery('table-keeper', this.roomLabel(frame.room_id), p, frame.sequence);
     const body = p.body.trim();
     const who = p.sender_name || 'Someone';

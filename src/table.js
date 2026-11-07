@@ -23,7 +23,7 @@ const players = args.players.split(',').map((s) => s.trim()).filter(Boolean);
 const STATE = new URL(`../.table-${args.campaign}.json`, import.meta.url);
 
 const connect = (creds, name, rooms) =>
-  new SwitchAgent({ baseUrl: env.SWITCH_URL, agentId: creds.id, apiKey: creds.apiKey, name, rooms, scope: 'all' });
+  new SwitchAgent({ baseUrl: env.SWITCH_URL, agentId: creds.id, apiKey: creds.apiKey, name, rooms });
 
 // 1. One Switch agent per character, plus the Keeper that runs dice and opens rooms.
 const keeperCreds = await registerAgent({ name: 'table-keeper', displayName: 'Keeper', description: 'Tablefolk keeper: dice, hit points, and side rooms. No model, just code.' });

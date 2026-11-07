@@ -5,6 +5,8 @@ const file = process.argv[2];
 const lines = fs.readFileSync(file, 'utf8').trim().split('\n').map((l) => JSON.parse(l));
 const header = lines.find((l) => l.kind === 'header');
 const note = lines.find((l) => l.kind === 'note');
+const VOICES = { cli: 'a hosted model', anthropic: 'a hosted model', ollama: 'a local model' };
+if (note) note.text = note.text.replace(/voices: (\w+)/, (_, v) => `voices: ${VOICES[v] || v}`);
 const extraRooms = lines.filter((l) => l.kind === 'room');
 const t0 = lines[0].t;
 const out = {

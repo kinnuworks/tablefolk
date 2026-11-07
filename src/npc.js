@@ -12,7 +12,8 @@ const MAX_NPC_CHAIN = 0; // NPCs answer people, not each other (raise to let the
 export class Npc {
   constructor({ def, creds, connect, state, campaign, recorder, roomLabel }) {
     Object.assign(this, { def, creds, connect, state, campaign, recorder, roomLabel });
-    this.conns = new Map(); // room id -> SwitchAgent connection
+    this.conns = new Map();
+    this.seen = new Set(); // one message can arrive on more than one connection
     this.memory = [];
     this.busy = false;
     this.pending = null;
@@ -23,7 +24,7 @@ export class Npc {
 
   async start() {
     for (const key of this.def.rooms) await this.join(this.state.rooms[key].id);
-    await this.secrecyCheck();
+    this.secrecyDone = this.secrecyCheck(); // runs in the background; tests and the demo await it
   }
 
   async join(roomId) {
@@ -35,16 +36,27 @@ export class Npc {
   }
 
   // Ask Switch for every room this NPC is not in. A 403 is the expected answer.
+  // Switch rate-limits a refused request that is repeated (429 with a wait), so wait and ask again.
+  // Between checks it reads its own room: Switch's breaker trips on a run of identical refusals,
+  // and any answer that is not a refusal resets it.
   async secrecyCheck() {
-    const any = [...this.conns.values()][0];
+    const [ownId, any] = [...this.conns.entries()][0];
     for (const [key, room] of Object.entries(this.state.rooms)) {
       if (this.conns.has(room.id)) continue;
-      try {
-        await any.op('read_context', { room_id: room.id, limit: 5 });
-        this.recorder.write({ kind: 'leak', agent: this.def.name, room: key });
-        console.error(`!! ${this.def.displayName} could read ${key}. Secrecy is broken.`);
-      } catch (e) {
-        this.recorder.denied(this.def.name, key, e.message.replace(/^.*-> /, ''));
+      await any.op('read_context', { room_id: ownId, limit: 1 }).catch(() => {});
+      for (let attempt = 0; attempt < 4; attempt++) {
+        try {
+          await any.op('read_context', { room_id: room.id, limit: 5 });
+          this.recorder.write({ kind: 'leak', agent: this.def.name, room: key });
+          console.error(`!! ${this.def.displayName} could read ${key}. Secrecy is broken.`);
+          break;
+        } catch (e) {
+          const detail = e.message.replace(/^.*-> /, '');
+          const wait = detail.startsWith('429') && Number(detail.match(/for (\d+) s/)?.[1]);
+          if (wait) { await new Promise((r) => setTimeout(r, (wait + 1) * 1000)); continue; }
+          this.recorder.denied(this.def.name, key, detail);
+          break;
+        }
       }
     }
   }
@@ -62,6 +74,7 @@ export class Npc {
   hear(frame) {
     const p = frame.payload || {};
     if (!p.body || isJoinGreeting(p)) return;
+    if (p.message_id) { if (this.seen.has(p.message_id)) return; this.seen.add(p.message_id); }
     const room = this.roomLabel(frame.room_id);
     this.recorder.delivery(this.def.name, room, p, frame.sequence);
     this.memory.push({ room, who: this.displayOf(p.sender_name), text: p.body });

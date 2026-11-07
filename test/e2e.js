@@ -41,6 +41,7 @@ const npcs = campaign.npcs.map((def) => new Npc({ def, creds: npcC[def.name], co
 keeper.npcs = npcs;
 await keeper.start();
 for (const n of npcs) await n.start();
+await Promise.all(npcs.map((n) => n.secrecyDone));
 const player = connect(mira, 'mira', [state.rooms.table.id, state.rooms.alley.id]);
 const heard = [];
 player.onEvent((k, f) => k === 'message' && heard.push({ room: label(f.room_id), who: f.payload.sender_name, body: f.payload.body, t: Date.now() }));
