@@ -71,7 +71,8 @@
     "GM",
     "Mira",
     "Tomas"
-   ]
+   ],
+   "label": "The feast hall"
   },
   "study": {
    "title": "dukes-study",
@@ -84,7 +85,8 @@
    ],
    "humans": [
     "GM"
-   ]
+   ],
+   "label": "The duke's study"
   },
   "whisper": {
    "title": "rogue-whisper",
@@ -97,7 +99,8 @@
    "humans": [
     "GM",
     "Mira"
-   ]
+   ],
+   "label": "Rogue and GM, in private"
   },
   "alley": {
    "title": "back-alley",
@@ -111,7 +114,8 @@
    "humans": [
     "GM",
     "Mira"
-   ]
+   ],
+   "label": "The back alley"
   }
  },
  "denied": [

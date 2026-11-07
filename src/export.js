@@ -9,6 +9,8 @@ const VOICES = { cli: 'a hosted model', anthropic: 'a hosted model', ollama: 'a 
 if (note) note.text = note.text.replace(/voices: (\w+)/, (_, v) => `voices: ${VOICES[v] || v}`);
 const extraRooms = lines.filter((l) => l.kind === 'room');
 const t0 = lines[0].t;
+const campaign = (await import('../campaigns/greywater.js')).default;
+for (const [k, r] of Object.entries(header.rooms)) r.label = campaign.rooms[k]?.label;
 const out = {
   campaign: header.campaign, setting: header.setting, npcs: header.npcs, note: note?.text ?? null,
   people: note?.people ?? [],
