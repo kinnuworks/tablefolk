@@ -1,156 +1,880 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-mood="cream" data-accent="terracotta">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tablefolk</title>
-<meta name="description" content="Replay of a real Tablefolk session on Switch. Watch the table through any NPC's eyes.">
+<meta name="description" content="AI NPCs for tabletop games that only know what was said in front of them. Every NPC is its own Switch agent. Watch a recorded game through any NPC's eyes.">
+<meta property="og:title" content="Tablefolk: AI NPCs that can't eavesdrop">
+<meta property="og:description" content="Every NPC is its own Switch agent, and Switch only sends it the rooms it sits in.">
+<meta property="og:image" content="img/stage.jpg">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
 <style>
-  :root { --bg: #fff; --fg: #1b1b1b; --muted: #6b6b6b; --line: #e3e3e3; --card: #f7f7f7; --accent: #1a5fd0; --lock: #f1f1f1; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #141414; --fg: #ececec; --muted: #9a9a9a; --line: #2c2c2c; --card: #1d1d1d; --accent: #7aa7ff; --lock: #1a1a1a; } }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.45 system-ui, -apple-system, Segoe UI, sans-serif; }
-  header { padding: 20px 16px 8px; max-width: 1280px; margin: 0 auto; }
-  h1 { font-size: 22px; margin: 0 0 4px; }
-  .lede { margin: 0; color: var(--muted); max-width: 760px; }
-  .bar { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); }
-  .bar-inner { max-width: 1280px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .label { color: var(--muted); font-size: 13px; margin-right: 4px; }
-  button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
-  button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-  .spacer { flex: 1; }
-  .summary { max-width: 1280px; margin: 0 auto; padding: 10px 16px 0; min-height: 30px; }
-  .summary p { margin: 0; }
-  main { max-width: 1280px; margin: 0 auto; padding: 12px 16px 40px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-  .room { border: 1px solid var(--line); border-radius: 10px; background: var(--card); display: flex; flex-direction: column; min-height: 220px; max-height: 70vh; }
-  .room h2 { font-size: 14px; margin: 0; padding: 10px 12px 2px; }
-  .room h2 .code { font-weight: 400; font-size: 11px; color: var(--muted); font-family: ui-monospace, monospace; }
-  .room .about { font-size: 12px; color: var(--muted); padding: 0 12px 8px; border-bottom: 1px solid var(--line); }
-  .msgs { overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 8px; }
-  .msg .who { font-size: 12px; font-weight: 600; }
-  .msg .who .tag { font-weight: 400; color: var(--muted); }
-  .msg .body { white-space: pre-wrap; overflow-wrap: anywhere; }
-  .msg.npc .who { color: var(--accent); }
-  .room.locked { background: var(--lock); }
-  .room.locked .msgs { color: var(--muted); }
-  .locknote { font-size: 13px; }
-  .locknote code { font-size: 12px; overflow-wrap: anywhere; }
-  .empty { color: var(--muted); font-size: 13px; }
-  footer { max-width: 1280px; margin: 0 auto; padding: 0 16px 32px; color: var(--muted); font-size: 13px; }
-  .error { padding: 16px; color: #b00020; }
+/* ---------- Tokens ---------- */
+:root{
+  --bg:#FFFFFF; --bg-alt:#F5F5F7; --sunk:var(--bg-alt); --surface:#FFFFFF; --surface-2:#FAFAFB; --band-edge:none;
+  --ink:#1D1D1F; --ink-2:#515154; --ink-3:#6E6E73; --ink-4:#86868B;
+  --line:rgba(0,0,0,.08); --line-2:rgba(0,0,0,.14); --tint:rgba(0,0,0,.045);
+  --shadow-rgb:0 0 0;
+  --accent:#F7A028; --accent-hi:#FFC45A; --accent-ink:#8F5200; --accent-wash:#FFF3DE; --on-accent:#2A1700;
+  --focus:var(--accent-ink); --marker:#D4F53C; --success:#1F7A3D;
+  --font-display:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-body:var(--font-display);
+  --font-serif:"Instrument Serif",ui-serif,Georgia,serif;
+  --font-mono:"JetBrains Mono","Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --display-weight:700; --display-track:-.042em;
+  --fs-display:clamp(42px,6.4vw,80px); --fs-h2:clamp(32px,4.4vw,54px); --fs-h3:clamp(24px,3vw,38px);
+  --fs-lead:clamp(17.5px,1.55vw,21px); --fs-body:16.5px; --fs-small:14.5px; --fs-micro:13px;
+  --container:1120px; --text-max:680px; --gutter:24px; --section-y:clamp(80px,10vw,128px); --bleed:clamp(64px,9vw,140px);
+  --r-xs:7px; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:28px; --r-2xl:32px; --r-pill:999px;
+  --ring:0 0 0 1px var(--line);
+  --shadow-1:0 0 0 .5px rgba(var(--shadow-rgb)/.10),0 1px 2px rgba(var(--shadow-rgb)/.06),0 6px 18px rgba(var(--shadow-rgb)/.06);
+  --shadow-2:0 0 0 .5px rgba(var(--shadow-rgb)/.10),0 2px 6px rgba(var(--shadow-rgb)/.05),0 24px 60px -12px rgba(var(--shadow-rgb)/.18);
+  --shadow-3:0 0 0 1px rgba(var(--shadow-rgb)/.06),0 40px 90px -30px rgba(var(--shadow-rgb)/.42);
+  --ease-out:cubic-bezier(.22,1,.36,1); --ease-spring:cubic-bezier(.34,1.36,.64,1);
+  --dur-press:.12s; --dur-hover:.2s; --dur-ui:.3s; --dur-reveal:.7s;
+  --wallpaper:radial-gradient(90% 80% at 12% 100%,#FFC978 0,transparent 60%),radial-gradient(70% 70% at 88% 8%,#BFD9FF 0,transparent 62%),linear-gradient(160deg,#F7F3EE,#ECEFF6);
+  --wallpaper-soft:radial-gradient(70% 60% at 85% 0%,#DCE8FF 0,transparent 60%),radial-gradient(60% 60% at 10% 100%,#FFE6C2 0,transparent 60%),linear-gradient(160deg,#F7F7F9,#EEF0F4);
+  --wash:linear-gradient(#DCE8FE,#EEF4FF 55%,var(--bg));
+  --chrome:linear-gradient(#FBFBFB,#F1F1F2); --chrome-line:rgba(0,0,0,.08); --chrome-ink:#6E6E73;
+  --key-bg:linear-gradient(#fff,#F2F2F4); --key-ink:#3A3A3C; --key-edge:inset 0 0 0 1px rgba(0,0,0,.10),0 1.5px 0 rgba(0,0,0,.18),0 2px 3px rgba(0,0,0,.06);
+}
+[data-mood="white"]{
+  --bg-alt:#FFFFFF; --sunk:#F6F6F7; --surface-2:#FAFAFA; --band-edge:inset 0 1px 0 var(--line);
+  --wallpaper-soft:radial-gradient(60% 70% at 88% 0%,#EEF3FF 0,transparent 60%),radial-gradient(60% 60% at 8% 100%,#FFF3E2 0,transparent 60%),#FAFAFA;
+}
+[data-mood="cream"]{
+  --bg:#FAF6EF; --bg-alt:#F3ECE1; --surface:#FFFEFC; --surface-2:#FBF8F3;
+  --ink:#17150F; --ink-2:#423C33; --ink-3:#6D6459; --ink-4:#857B6E;
+  --line:#EBE3D7; --line-2:#DDD2C2; --tint:rgba(23,21,15,.055); --shadow-rgb:23 16 14;
+  --font-display:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --display-track:-.035em;
+  --wallpaper:radial-gradient(130% 100% at 50% -20%,#F7E6D6 0%,#E3AB7C 40%,#C2542A 100%);
+  --wallpaper-soft:radial-gradient(130% 100% at 50% -20%,#FDF8F2 0%,#F2E2CE 48%,#E2C3A1 100%);
+}
+[data-mood="cobalt"]{
+  --bg:#FDFDFE; --bg-alt:#F4F6FC; --surface:#FFFFFF; --surface-2:#FBFBFD;
+  --ink:#0E1116; --ink-2:#3F4552; --ink-3:#5C6372; --ink-4:#868C9C;
+  --line:#E4E6EE; --line-2:#D3D8E6; --tint:rgba(47,91,255,.07); --shadow-rgb:16 20 60;
+  --font-display:"Outfit",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-body:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --display-weight:500; --display-track:-.028em;
+  --wallpaper:radial-gradient(80% 70% at 50% 0%,#8EA2FF 0%,transparent 60%),linear-gradient(160deg,#3D5BF0,#1E2FA8);
+  --wallpaper-soft:radial-gradient(80% 70% at 50% 0%,#E3E9FF 0%,transparent 60%),linear-gradient(160deg,#F2F5FF,#E4EAFF);
+}
+[data-accent="terracotta"]{--accent:#D66B38;--accent-hi:#E8895A;--accent-ink:#A1411F;--on-accent:#fff}
+[data-accent="cobalt"]{--accent:#2F5BFF;--accent-hi:#5B8CFF;--accent-ink:#1B3BCC;--on-accent:#fff}
+[data-accent="mono"]{--accent:var(--ink);--accent-hi:color-mix(in oklab,var(--ink) 80%,var(--bg));--accent-ink:var(--ink);--on-accent:var(--bg)}
+[data-accent]{--accent-wash:color-mix(in oklab,var(--accent) 14%,var(--surface))}
+[data-theme="dark"]{--bg:#0B0B0D;--bg-alt:#111114;--sunk:var(--bg-alt);--band-edge:none;--surface:#18181C;--surface-2:#1E1E23;--ink:#F2F0EB;--ink-2:#C9C7C2;--ink-3:#A4A4AE;--ink-4:#7C7C86;--line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.14);--tint:rgba(255,255,255,.06);--shadow-rgb:0 0 0;
+  --accent-ink:color-mix(in oklab,var(--accent) 72%,#fff); --accent-wash:color-mix(in oklab,var(--accent) 18%,var(--surface));
+  --wallpaper-soft:radial-gradient(70% 60% at 85% 0%,rgba(90,130,255,.20) 0,transparent 60%),radial-gradient(60% 60% at 10% 100%,rgba(255,170,80,.16) 0,transparent 60%),linear-gradient(160deg,#16161A,#0F0F12);
+  --wallpaper:radial-gradient(90% 80% at 12% 100%,rgba(255,170,70,.5) 0,transparent 60%),radial-gradient(70% 70% at 88% 8%,rgba(110,150,255,.45) 0,transparent 62%),linear-gradient(160deg,#1C1915,#13151B);
+  --wash:linear-gradient(#141A33,var(--bg)); --chrome:linear-gradient(#2C2C31,#232328); --chrome-line:rgba(255,255,255,.06); --chrome-ink:#9A9AA2;
+  --key-bg:linear-gradient(#2C2C32,#222227); --key-ink:#C9C7C2; --key-edge:inset 0 0 0 1px rgba(255,255,255,.08),0 1.5px 0 rgba(0,0,0,.6); color-scheme:dark}
+[data-theme="dark"][data-mood="cream"]{--bg:#14110D;--bg-alt:#1A1611;--surface:#201B15;--surface-2:#262019;--ink:#F3ECE1;--ink-2:#D9CFC0;--ink-3:#AEA290;--ink-4:#8A7F70;--line:rgba(255,236,210,.09);--line-2:rgba(255,236,210,.15);--tint:rgba(255,236,210,.06);
+  --wallpaper:radial-gradient(130% 100% at 50% -20%,#E9B48A 0%,#C9693A 45%,#7A2E12 100%);
+  --wallpaper-soft:radial-gradient(130% 100% at 50% -20%,#3A2A1E 0%,#24190F 60%,#1A120B 100%)}
+[data-theme="dark"][data-mood="cobalt"]{--bg:#0A0C14;--bg-alt:#0F1220;--surface:#151A2B;--surface-2:#1A2033;--ink:#EEF1FA;--ink-2:#C3C9D8;--ink-3:#99A1B5;--ink-4:#7A8296;--line:rgba(180,195,255,.10);--line-2:rgba(180,195,255,.16);--tint:rgba(120,145,255,.10);
+  --wallpaper:radial-gradient(80% 70% at 50% 0%,#8EA2FF 0%,transparent 60%),linear-gradient(160deg,#3D5BF0,#1E2FA8);
+  --wallpaper-soft:radial-gradient(80% 70% at 50% 0%,rgba(90,120,255,.28) 0%,transparent 60%),linear-gradient(160deg,#11162A,#0B0E1A)}
+@media (max-width:640px){:root{--gutter:18px}}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:88px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 var(--fs-body)/1.6 var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden}
+img,svg,video{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+p{margin:0}
+::selection{background:var(--marker);color:#17150F}
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.container{width:min(100% - 2*var(--gutter),var(--container));margin-inline:auto}
+
+/* ---------- Type ---------- */
+h1,.t-display{margin:0;font-family:var(--font-display);font-size:var(--fs-display);font-weight:var(--display-weight);line-height:1;letter-spacing:var(--display-track);text-wrap:balance}
+h2,.t-h2{margin:0;font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--display-weight);line-height:1.05;letter-spacing:calc(var(--display-track) + .006em);text-wrap:balance}
+h3,.t-h3{margin:0;font-family:var(--font-display);font-size:var(--fs-h3);font-weight:var(--display-weight);line-height:1.1;letter-spacing:calc(var(--display-track) + .012em);text-wrap:balance}
+.t-title{margin:0;font-size:17px;font-weight:600;line-height:1.35;letter-spacing:-.015em}
+.lead{font-size:var(--fs-lead);line-height:1.5;letter-spacing:-.011em;color:var(--ink-3);max-width:620px;text-wrap:pretty}
+.t-small{font-size:var(--fs-small);line-height:1.55;color:var(--ink-3)}
+.t-micro{font-size:var(--fs-micro);color:var(--ink-3)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.eyebrow svg{width:14px;height:14px;stroke-width:2}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.t-muted{color:var(--ink-4)}
+.t-accent{color:var(--accent-ink)}
+.t-serif{font-family:var(--font-serif);font-style:italic;font-weight:400;letter-spacing:-.01em}
+.t-mono{font-family:var(--font-mono);font-size:.92em;letter-spacing:0}
+.hl{position:relative;z-index:0;white-space:nowrap}
+.hl::after{content:"";position:absolute;z-index:-1;left:.02em;right:.04em;bottom:.05em;height:.17em;border-radius:99px;background:var(--marker)}
+.hl-soft{background:linear-gradient(transparent 58%,color-mix(in oklab,var(--accent) 20%,transparent) 58%)}
+
+/* ---------- Buttons ---------- */
+.btn{--h:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:var(--h);padding:0 24px;border:0;border-radius:var(--r-pill);font:600 15px/1 var(--font-body);letter-spacing:-.01em;white-space:nowrap;cursor:pointer;transition:transform var(--dur-press) var(--ease-spring),box-shadow var(--dur-hover) var(--ease-out),background-color var(--dur-hover) var(--ease-out),filter var(--dur-hover) var(--ease-out)}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.97)}
+.btn svg{width:17px;height:17px}
+.btn-sm{--h:36px;padding:0 15px;font-size:13.5px}
+.btn-lg{--h:54px;padding:0 28px;font-size:16px}
+.btn-ink{background:var(--ink);color:var(--bg)}
+.btn-ink:hover{background:color-mix(in oklab,var(--ink) 85%,var(--bg))}
+.btn-candy{color:var(--on-accent);background:linear-gradient(135deg,var(--accent-hi),var(--accent) 60%,color-mix(in oklab,var(--accent) 88%,#000));box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.14),0 0 0 1px color-mix(in oklab,var(--accent-ink) 40%,transparent),0 8px 20px -8px color-mix(in oklab,var(--accent-ink) 70%,transparent)}
+.btn-candy:hover{filter:brightness(1.04) saturate(1.06)}
+.btn-outline{background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-2)}
+.btn-outline:hover{background:var(--surface-2)}
+.btn-ghost{background:var(--tint);color:var(--ink)}
+.btn-halo{background:#fff;color:#0E1116;box-shadow:0 0 0 6px rgba(255,255,255,.14),0 18px 40px -12px rgba(10,20,120,.6)}
+.btn .tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:var(--r-pill);background:var(--accent-ink);color:#fff;font-size:12.5px;font-weight:650}
+.btn-ink .tag{background:rgba(255,255,255,.16);color:inherit}
+.btn-candy .tag{background:rgba(0,0,0,.12);color:inherit}
+.btn .sep{opacity:.45;font-weight:400}
+.join{display:flex;gap:6px;width:min(100%,420px);margin:32px auto 0;padding:6px;border-radius:var(--r-pill);background:var(--surface);box-shadow:var(--shadow-1)}
+.join:focus-within{box-shadow:0 0 0 2px var(--focus),var(--shadow-1)}
+.join input{flex:1;min-width:0;padding:0 14px;border:0;outline:0;background:transparent;font:inherit;font-size:15px;color:var(--ink)}
+.join .btn{--h:42px}
+
+/* ---------- Nav (floating glass pill) ---------- */
+.nav{position:fixed;inset:12px 0 auto;z-index:50;display:flex;justify-content:center;padding-inline:12px;pointer-events:none}
+.nav__bar{pointer-events:auto;width:min(100%,980px);height:56px;display:flex;align-items:center;gap:8px;padding:0 8px 0 14px;border-radius:var(--r-pill);background:color-mix(in oklab,var(--surface) 74%,transparent);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);box-shadow:0 0 0 1px var(--line),0 10px 30px -14px rgba(var(--shadow-rgb)/.22)}
+.nav__brand{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:650;letter-spacing:-.02em}
+.nav__links{display:flex;gap:2px;margin-inline:auto}
+.nav__links a{padding:8px 12px;border-radius:var(--r-pill);font-size:14px;font-weight:500;color:var(--ink-2);transition:background-color var(--dur-hover),color var(--dur-hover)}
+.nav__links a:hover{background:var(--tint);color:var(--ink)}
+.nav--on-color .nav__bar{background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);color:#fff}
+.nav--on-color .nav__links a{color:rgba(255,255,255,.85)}
+.nav--on-color .nav__links a:hover{background:rgba(255,255,255,.12);color:#fff}
+.nav--on-color .btn-ink{background:#fff;color:#0E1116}
+.app-icon{width:28px;height:28px;border-radius:22.5%;flex:none;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+@media (max-width:760px){.nav__links{display:none}.nav__bar{justify-content:space-between}}
+
+/* ---------- Badge / chips / segmented / controls ---------- */
+.badge{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px 0 4px;border-radius:var(--r-pill);background:var(--surface);box-shadow:var(--shadow-1);font-size:13px;font-weight:550;color:var(--ink-2)}
+.badge__tag{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:var(--r-pill);background:var(--ink);color:var(--bg);font-size:12px;font-weight:650}
+.badge--dot{padding-left:12px}.badge--dot::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border:0;border-radius:var(--r-pill);background:var(--surface);box-shadow:var(--ring);font:550 13.5px/1 var(--font-body);color:var(--ink-2)}
+.chip--soft{background:var(--tint);box-shadow:none}
+button.chip{cursor:pointer;transition:background-color var(--dur-hover),box-shadow var(--dur-hover),color var(--dur-hover)}
+button.chip:hover{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);box-shadow:none}
+.segmented{display:inline-flex;gap:2px;padding:4px;border-radius:var(--r-pill);background:var(--tint)}
+.segmented button{height:34px;padding:0 18px;border:0;border-radius:var(--r-pill);background:transparent;font:550 14px/1 var(--font-body);color:var(--ink-3);cursor:pointer;transition:background-color var(--dur-ui) var(--ease-out),color var(--dur-ui) var(--ease-out),box-shadow var(--dur-ui) var(--ease-out)}
+.segmented [aria-selected="true"],.segmented [aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
+.switch{-webkit-appearance:none;appearance:none;position:relative;flex:none;width:40px;height:24px;margin:0;border-radius:99px;background:var(--line-2);cursor:pointer;transition:background-color var(--dur-ui) var(--ease-out)}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.22);transition:transform var(--dur-ui) var(--ease-spring)}
+.switch:checked{background:var(--accent)}.switch:checked::after{transform:translateX(16px)}
+.range{--val:50%;-webkit-appearance:none;appearance:none;width:100%;height:24px;margin:0;background:transparent;cursor:pointer}
+.range::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(90deg,var(--accent) var(--val),var(--tint) var(--val))}
+.range::-moz-range-track{height:6px;border-radius:99px;background:var(--tint)}
+.range::-moz-range-progress{height:6px;border-radius:99px;background:var(--accent)}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.14),0 2px 6px rgba(0,0,0,.2);transition:transform var(--dur-press) var(--ease-spring)}
+.range::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.14),0 2px 6px rgba(0,0,0,.2)}
+.range:active::-webkit-slider-thumb{transform:scale(1.08)}
+kbd{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:var(--r-xs);font:500 12.5px/1 var(--font-mono);color:var(--key-ink);background:var(--key-bg);box-shadow:var(--key-edge)}
+:where(p,li) kbd{height:21px;min-width:21px;margin-block:-3px;padding:0 5px;font-size:12px}
+.avatar{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--accent-wash);color:var(--accent-ink);font-size:13px;font-weight:650}
+@media (pointer:coarse){.btn-sm{--h:44px}.chip,.segmented button{min-height:44px}}
+
+/* ---------- Layout ---------- */
+.section{padding-block:var(--section-y)}
+.section--alt{background:var(--bg-alt);box-shadow:var(--band-edge)}
+.section-head{max-width:var(--text-max);margin:0 auto clamp(40px,5vw,64px);text-align:center}
+.section-head .eyebrow{margin-bottom:16px}
+.section-head .lead{margin:18px auto 0}
+.section-head--left{margin-inline:0;text-align:left}.section-head--left .lead{margin-inline:0}
+.grid{display:grid;gap:16px}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.split{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(32px,5vw,64px);align-items:center}
+.split--flip>:first-child{order:2}
+.split .eyebrow{margin-bottom:14px}.split .lead,.split .t-small{margin-top:14px}.split .chips{margin-top:20px}
+.stack>*+*{margin-top:clamp(72px,9vw,120px)}
+.try{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:16px;align-items:stretch}
+@media (max-width:900px){.grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}.split,.try{grid-template-columns:1fr}.split--flip>:first-child{order:0}}
+@media (max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* ---------- Hero ---------- */
+.hero{padding-top:calc(80px + clamp(48px,8vw,96px));text-align:center}
+.hero .badge{margin-bottom:24px}
+.hero h1{max-width:900px;margin-inline:auto}
+.hero .lead{margin:22px auto 0}
+.cta-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:32px}
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:16px;font-size:13.5px;color:var(--ink-3)}
+.trust span+span::before{content:"·";margin-right:14px;color:var(--ink-4)}
+@media (max-width:640px){.trust{flex-direction:column;align-items:center;gap:2px}.trust span+span::before{display:none}}
+.hero__visual{margin-top:clamp(44px,6vw,72px)}
+.bleed{position:relative;z-index:1;margin-bottom:calc(-1*var(--bleed))}
+.after-bleed{padding-top:calc(var(--section-y) + var(--bleed))}
+.hero--split{text-align:left}.hero--split .container{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:center}
+.hero--split h1,.hero--split .lead{margin-inline:0}.hero--split .cta-row,.hero--split .trust{justify-content:flex-start;align-items:flex-start}
+@media (max-width:900px){.hero--split .container{grid-template-columns:1fr}}
+.hero--color{position:relative;overflow-x:clip;color:#fff;background:radial-gradient(120% 90% at 50% -10%,#5C78FF 0%,#3655EC 45%,#2338C9 100%);padding-bottom:clamp(56px,7vw,88px)}
+.hero--color::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 1px,transparent 1px 96px),repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1px,transparent 1px 96px);-webkit-mask:radial-gradient(70% 60% at 50% 30%,#000,transparent);mask:radial-gradient(70% 60% at 50% 30%,#000,transparent)}
+.hero--color>*{position:relative}
+.hero--color .lead{color:rgba(255,255,255,.76)}.hero--color .t-muted{color:rgba(255,255,255,.62)}.hero--color .trust,.hero--color .trust span::before{color:rgba(255,255,255,.7)}
+.hero--color :focus-visible{outline-color:#fff}
+.hero--color:has(.bleed){padding-bottom:0}
+.hero--color .btn-outline{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.hero--color .btn-outline:hover{background:rgba(255,255,255,.18)}
+.hero--wash{background:var(--wash)}
+
+/* ---------- Surfaces ---------- */
+.card{color:var(--ink);background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--ring);padding:24px}
+.card--flat{background:var(--sunk);box-shadow:none}
+.section--alt .card--flat{background:var(--surface);box-shadow:var(--ring)}
+.card--raised{box-shadow:var(--shadow-2)}
+.card--chosen{box-shadow:0 0 0 1.5px var(--accent),var(--shadow-1)}
+.panel{border-radius:var(--r-xl);background:var(--sunk);padding:clamp(24px,3vw,40px);overflow:hidden}
+.tile{display:flex;align-items:flex-start;gap:14px;padding:20px;border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--ring);transition:box-shadow var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out)}
+.tile:hover{box-shadow:var(--shadow-1);transform:translateY(-2px)}
+.tile .t-title{font-size:16px;margin:1px 0 4px}
+.tile p{font-size:var(--fs-small);line-height:1.5;color:var(--ink-3)}
+.icon-tile{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent-wash);color:var(--accent-ink)}
+.icon-tile svg{width:19px;height:19px;stroke-width:1.75}
+.bento{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px}
+.bento>*{grid-column:span 2;display:flex;flex-direction:column;gap:12px;min-height:260px;padding:28px;border-radius:var(--r-xl);background:var(--surface);box-shadow:var(--ring);overflow:hidden}
+.bento>.span-3{grid-column:span 3}.bento>.span-4{grid-column:span 4}.bento>.span-6{grid-column:span 6}
+.bento>.is-accent{background:linear-gradient(160deg,var(--accent-hi),var(--accent));color:var(--on-accent);box-shadow:none}
+@media (max-width:900px){.bento{grid-template-columns:1fr}.bento>*{grid-column:auto!important}}
+
+/* ---------- Product frames (device chrome may use fixed colors) ---------- */
+.stage{position:relative;padding:clamp(18px,4vw,56px);border-radius:var(--r-xl);background:var(--wallpaper);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.stage--soft{background:var(--wallpaper-soft)}
+.window{position:relative;overflow:hidden;border-radius:14px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow-3);text-align:left}
+.window__bar{position:relative;display:flex;align-items:center;height:38px;padding:0 14px;background:var(--chrome);border-bottom:1px solid var(--chrome-line);font-size:12.5px;font-weight:600;color:var(--chrome-ink)}
+.window__title{position:absolute;left:50%;transform:translateX(-50%);max-width:calc(100% - 150px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lights{display:flex;gap:8px}
+.lights i{width:12px;height:12px;border-radius:50%;background:#FF5F57;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.14)}
+.lights i:nth-child(2){background:#FEBC2E}.lights i:nth-child(3){background:#28C840}
+.window--dark{background:#1B1B1F;color:#F2F0EB}
+.window--dark .window__bar{background:#26262B;border-color:rgba(255,255,255,.06);color:#9A9AA2}
+.desktop{position:relative;overflow:hidden;aspect-ratio:16/10;border-radius:var(--r-lg);background:var(--wallpaper);box-shadow:var(--shadow-3);text-align:left}
+.menubar{display:flex;align-items:center;gap:16px;height:26px;padding:0 14px;background:rgba(255,255,255,.4);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);font-size:12.5px;font-weight:600;color:#1D1D1F}
+.menubar .end{display:flex;gap:14px;margin-left:auto;font-weight:500}
+.desktop--dark .menubar{background:rgba(0,0,0,.35);color:#fff}
+.desktop--dark .popover{background:rgba(38,38,44,.82);color:#F2F0EB;box-shadow:0 0 0 .5px rgba(255,255,255,.14),0 20px 50px -12px rgba(0,0,0,.5)}
+.popover{position:absolute;width:300px;padding:10px;border-radius:14px;background:rgba(246,246,248,.84);-webkit-backdrop-filter:blur(24px) saturate(1.8);backdrop-filter:blur(24px) saturate(1.8);box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 20px 50px -12px rgba(0,0,0,.35);font-size:13px;color:#1D1D1F}
+.phone{width:min(300px,78vw);aspect-ratio:9/19.5;margin-inline:auto;padding:10px;border-radius:48px;background:#0E0E10;box-shadow:var(--shadow-3),inset 0 0 0 1.5px #3A3A3E}
+.phone__screen{position:relative;height:100%;overflow:hidden;border-radius:38px;background:var(--surface);text-align:left}
+.phone__screen::before{content:"";position:absolute;z-index:3;top:10px;left:50%;width:96px;height:28px;transform:translateX(-50%);border-radius:20px;background:#0E0E10}
+.phone__screen::after{content:"";position:absolute;bottom:8px;left:50%;width:34%;height:5px;transform:translateX(-50%);border-radius:3px;background:var(--ink);opacity:.85}
+.phone__status{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 26px;font-size:13px;font-weight:600}
+.phone__body{padding:8px 16px 32px}
+.float{position:absolute;z-index:2;color:var(--ink);padding:12px 14px;border-radius:var(--r-md);background:color-mix(in oklab,var(--surface) 90%,transparent);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);box-shadow:var(--shadow-2);font-size:13px;text-align:left}
+@media (max-width:760px){.float{display:none}}
+
+/* ---------- Pricing / FAQ / quotes / footer ---------- */
+.price-card{max-width:460px;margin-inline:auto;overflow:hidden;border-radius:var(--r-xl);background:var(--surface);box-shadow:var(--shadow-2);text-align:left}
+.price-card__head{display:flex;align-items:center;gap:12px;padding:18px 24px;background:var(--sunk);border-bottom:1px solid var(--line)}
+.price-card__body{padding:28px}
+.price{display:flex;align-items:baseline;gap:10px}
+.price__amount{font:var(--display-weight) 56px/1 var(--font-display);letter-spacing:-.04em}
+.price__was{font-size:18px;color:var(--ink-3);text-decoration:line-through}
+.checklist{display:grid;gap:10px;margin:24px 0;padding:0;list-style:none;font-size:15px;color:var(--ink-2)}
+.checklist li{display:flex;gap:10px}
+.checklist li::before{content:"";flex:none;width:18px;height:18px;margin-top:3px;background:var(--accent-ink);-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12.5l4.5 4.5L19 7.5'/></svg>") center/contain no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12.5l4.5 4.5L19 7.5'/></svg>") center/contain no-repeat}
+.price-card .btn{width:100%}
+.faq{max-width:760px;margin-inline:auto;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 0;list-style:none;cursor:pointer;font-size:17px;font-weight:600;letter-spacing:-.015em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:22px;font-weight:400;color:var(--ink-3);transition:transform var(--dur-ui) var(--ease-out)}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{max-width:640px;margin-bottom:22px;color:var(--ink-3)}
+.quotes{columns:3 300px;column-gap:16px}
+.quote{break-inside:avoid;margin-bottom:16px;padding:22px;border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--ring)}
+.quote__who{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:14.5px;font-weight:600}
+.quote__who img{width:36px;height:36px;border-radius:50%}
+.quote__who small{display:block;font-size:13px;font-weight:400;color:var(--ink-3)}
+.quote p{font-size:15px;line-height:1.55;color:var(--ink-2)}
+.quote--feature{max-width:760px;margin-inline:auto;padding:clamp(28px,4vw,48px);text-align:center}
+.quote--feature p{font:var(--display-weight) clamp(22px,2.6vw,30px)/1.3 var(--font-display);letter-spacing:-.02em;color:var(--ink);text-wrap:balance}
+.quote--feature .quote__who{justify-content:center;margin:24px 0 0}
+.footer{padding:40px 0 48px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-3)}
+.footer .container{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
+
+/* ---------- Motion ---------- */
+.js .reveal{opacity:0;transform:translateY(14px);transition:opacity var(--dur-reveal) var(--ease-out),transform var(--dur-reveal) var(--ease-out);transition-delay:calc(var(--i,0)*80ms)}
+.js .reveal.in{opacity:1;transform:none}
+@media print{.js .reveal{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .reveal{opacity:1;transform:none;transition:none}*{animation:none!important}}
+
+/* ================= Tablefolk ================= */
+body{background-image:url(img/parchment.jpg);background-size:600px}
+.section--alt{background-color:var(--bg-alt);background-image:linear-gradient(rgba(243,236,225,.72),rgba(243,236,225,.72)),url(img/parchment.jpg);background-size:auto,600px}
+.app-icon{object-fit:cover;background:#F3ECE1}
+.nav__brand .app-icon{width:32px;height:32px;border-radius:9px}
+/* the manor map */
+.map{position:relative;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-2);aspect-ratio:4/3;background:#EAD9BF url(img/map.jpg) center/cover}
+.pin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.pin__label{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:var(--r-pill);background:rgba(255,254,252,.92);box-shadow:var(--shadow-2);font-size:12.5px;font-weight:700;white-space:nowrap;color:var(--ink)}
+.pin__label svg{width:13px;height:13px;color:var(--accent-ink)}
+.pin__who{display:flex;gap:3px}
+.pin__who img,.pin__who span{width:26px;height:26px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,254,252,.95),var(--shadow-1)}
+.pin__who span{display:grid;place-items:center;background:var(--surface);font-size:9.5px;font-weight:700;color:var(--ink-2)}
+@media (max-width:640px){.pin__label{font-size:11px;padding:4px 8px}.pin__who img,.pin__who span{width:20px;height:20px}}
+/* the alley banner */
+.banner{position:relative;margin:0 0 16px;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-2);aspect-ratio:21/8;background:#1E1A15 url(img/alley.jpg) center/cover}
+.banner figcaption{position:absolute;left:clamp(18px,4vw,40px);bottom:clamp(18px,4vw,36px);max-width:400px;color:#F3ECE1}
+.banner .eyebrow{color:rgba(243,236,225,.8)}
+.banner p{margin-top:8px;font:600 clamp(17px,2vw,24px)/1.3 var(--font-display);letter-spacing:-.02em;text-wrap:balance}
+.banner p em{font-family:var(--font-serif);font-weight:400;font-size:1.1em}
+@media (max-width:640px){.banner{aspect-ratio:4/3;background-position:70% center}.banner::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(20,15,10,.75))}.banner figcaption{z-index:1}}
+/* the closing scene */
+.final{position:relative;color:#F3ECE1;background:#1A120B url(img/ring.jpg) center 70%/cover;padding-block:clamp(110px,14vw,180px)}
+.final::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(20,13,8,.55),rgba(20,13,8,.15) 60%,rgba(20,13,8,.5))}
+.final .container{position:relative}
+.final .t-muted{color:rgba(243,236,225,.72)}
+.final .app-icon{border-radius:20px}
+.final .btn-ink{background:#FFFEFC;color:#17150F}
+.final .btn-outline{background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+
+:root{
+  /* the table app's own colours: parchment and candle */
+  --app-bg:#FFFDF8; --app-room:#FBF6EE; --app-lock:#F1E9DD; --app-lock-ink:#7A6C5B;
+  --npc-ink:#A1411F; --keeper:#3C5A3A;
+}
+.hero{padding-bottom:0}
+.hero h1 em{font-size:1.08em}
+.stage--table{background:linear-gradient(180deg,rgba(250,246,239,.1),rgba(194,84,42,.18)),url(img/stage.jpg) center/cover,var(--wallpaper)}
+.stage--table .window{max-width:1060px;margin-inline:auto}
+
+/* the replay app */
+.app{background:var(--app-bg)}
+.app__toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.app__label{font-size:12px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.eyes{display:flex;gap:4px;padding:4px;border-radius:var(--r-pill);background:var(--tint);overflow-x:auto;scrollbar-width:none;max-width:100%}
+.eyes::-webkit-scrollbar{display:none}
+.eye{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px 0 4px;border:0;border-radius:var(--r-pill);background:transparent;font:600 14px/1 var(--font-body);color:var(--ink-3);cursor:pointer;white-space:nowrap;transition:background-color var(--dur-ui) var(--ease-out),color var(--dur-ui) var(--ease-out),box-shadow var(--dur-ui) var(--ease-out)}
+.eye img,.eye .gm{width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none}
+.eye .gm{display:grid;place-items:center;background:var(--surface);box-shadow:var(--ring);color:var(--ink-2)}
+.eye .gm svg{width:16px;height:16px}
+.eye[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
+.eye[aria-pressed="true"] img{box-shadow:0 0 0 2px var(--accent)}
+.app__tools{display:flex;gap:6px;margin-left:auto}
+.app__summary{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2);font-size:14.5px;color:var(--ink-2)}
+.app__summary img{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
+.app__summary strong{color:var(--ink)}
+.app__summary .n{font-family:var(--font-mono);font-size:.95em;color:var(--npc-ink)}
+.rooms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:12px;height:min(560px,70vh)}
+.room{display:flex;flex-direction:column;min-height:0;border-radius:var(--r-md);background:var(--app-room);box-shadow:var(--ring);overflow:hidden;transition:background-color var(--dur-ui) var(--ease-out)}
+.room__head{padding:11px 13px 9px;border-bottom:1px solid var(--line)}
+.room__name{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700;letter-spacing:-.01em}
+.room__name svg{width:14px;height:14px;flex:none}
+.room__code{margin-top:2px;font:500 11.5px/1.3 var(--font-mono);color:var(--ink-3)}
+.room__who{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.room__who img,.room__who span{width:24px;height:24px;border-radius:50%;object-fit:cover;flex:none}
+.room__who span{display:grid;place-items:center;background:var(--surface);box-shadow:var(--ring);color:var(--ink-2);font-size:9.5px;font-weight:700;letter-spacing:-.02em}
+.msgs{flex:1;min-height:0;overflow-y:auto;padding:12px 12px 16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+.msg{display:flex;gap:9px;animation:msg-in .45s var(--ease-out) both}
+@keyframes msg-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg__av{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none;margin-top:1px}
+.msg__av--p{display:grid;place-items:center;background:var(--surface);box-shadow:var(--ring);font-size:10.5px;font-weight:700;color:var(--ink-2)}
+.msg__av--k{display:grid;place-items:center;background:color-mix(in oklab,var(--keeper) 14%,var(--surface));color:var(--keeper)}
+.msg__av--k svg{width:14px;height:14px}
+.msg__who{font-size:12.5px;font-weight:700;line-height:1.2}
+.msg__who .tag{margin-left:6px;font-weight:500;color:var(--ink-3)}
+.msg.npc .msg__who{color:var(--npc-ink)}
+.msg__body{margin-top:2px;font-size:13.5px;line-height:1.5;color:var(--ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
+.msg__body em{font-style:italic;color:var(--ink-3)}
+.msg.keeper .msg__body{font-family:var(--font-mono);font-size:12.5px;color:var(--keeper)}
+.room.locked{background:var(--app-lock)}
+.room.locked .room__name{color:var(--app-lock-ink)}
+.lock{flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:16px}
+.lock__icon{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--surface);box-shadow:var(--shadow-1);color:var(--accent-ink)}
+.lock__icon svg{width:20px;height:20px}
+.lock p{font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+.lock__code{padding:10px 12px;border-radius:var(--r-sm);background:#1E1A15;color:#F3ECE1;font:500 12px/1.5 var(--font-mono);overflow-wrap:anywhere}
+.lock__code b{color:#F2A27A;font-weight:500}
+.empty{font-size:13px;color:var(--ink-3)}
+.app__foot{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
+.app__foot .t-mono{color:var(--ink-2)}
+.progress{height:3px;background:var(--tint)}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s var(--ease-out)}
+@media (max-width:900px){
+  .rooms{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(260px,82%);overflow-x:auto;scroll-snap-type:x mandatory;height:520px}
+  .room{scroll-snap-align:start}
+  .app__tools{margin-left:0}
+}
+.stage--table{padding-bottom:clamp(18px,8vw,112px)}
+.float--a{left:clamp(18px,4vw,56px);bottom:26px;max-width:260px}
+.float--b{right:clamp(18px,4vw,56px);bottom:26px;max-width:280px}
+.float .row{display:flex;align-items:center;gap:10px}
+.float img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.float b{display:block;font-size:13px}
+.float span{color:var(--ink-3);font-size:12.5px}
+
+/* sections */
+.compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.compare .card{padding:28px;display:flex;flex-direction:column;gap:12px}
+.mini{margin-top:auto;padding:16px;border-radius:var(--r-md);background:var(--surface-2);box-shadow:var(--ring)}
+.card--flat .mini{background:var(--surface)}
+.flow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;font-size:12.5px}
+.flow .rooms-mini{display:grid;gap:6px}
+.flow .r{display:flex;align-items:center;gap:6px;padding:6px 9px;border-radius:9px;background:var(--app-room);box-shadow:var(--ring);font-weight:600}
+.flow .r.no{opacity:.45;text-decoration:line-through}
+.flow .arrow{color:var(--ink-4)}
+.flow .who{display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:600}
+.flow .who img{width:54px;height:54px;border-radius:50%;object-fit:cover;box-shadow:var(--shadow-1)}
+.flow .who .blob{display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:11px}
+@media (max-width:760px){.compare{grid-template-columns:1fr}}
+
+.matrix{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px}
+.matrix th,.matrix td{padding:10px 8px;text-align:center;border-bottom:1px solid var(--line)}
+.matrix th:first-child,.matrix td:first-child{text-align:left}
+.matrix thead th{font-size:12px;font-weight:600;color:var(--ink-3)}
+.matrix thead img{width:34px;height:34px;border-radius:50%;object-fit:cover;margin:0 auto 4px}
+.matrix td:first-child{font-weight:650}
+.matrix .yes{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.matrix .no{display:inline-block;width:10px;height:10px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.matrix tr:last-child td{border-bottom:0}
+
+.term{margin:0;padding:18px 20px;font:500 13px/1.7 var(--font-mono);color:#E9E2D6;overflow-x:auto}
+.term .c{color:#8F877B}.term .k{color:#F2A27A}.term .s{color:#B9D58C}.term .r{color:#FF8C7A}
+.chat{display:flex;flex-direction:column;gap:12px;padding:16px}
+.doc{margin:4px 16px 16px;padding:14px 16px;border-radius:var(--r-md);background:var(--surface);box-shadow:var(--shadow-1);font-size:13px}
+.doc h4{margin:0 0 6px;font-size:13px;display:flex;align-items:center;gap:8px}
+.doc h4 svg{width:15px;height:15px;color:var(--accent-ink)}
+.doc ul{margin:0;padding-left:18px;color:var(--ink-2);line-height:1.6}
+.yaml{margin:0;padding:18px 20px;font:500 12.5px/1.7 var(--font-mono);color:var(--ink-2);white-space:pre;overflow-x:auto}
+.yaml .k{color:var(--accent-ink)}.yaml .c{color:var(--ink-3)}
+
+.steps{display:grid;gap:16px;counter-reset:step}
+.step{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start}
+.step::before{counter-increment:step;content:counter(step);display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent-wash);color:var(--accent-ink);font:700 15px/1 var(--font-display)}
+.step .t-title{margin-top:8px}
+.step .t-small{margin-top:4px}
+.final{text-align:center}
+.final .app-icon{width:88px;height:88px;margin:0 auto 28px;box-shadow:var(--shadow-2)}
+.final h2{max-width:760px;margin-inline:auto}
+.footer .brand{display:flex;align-items:center;gap:10px;color:var(--ink-2);font-weight:600}
+.footer nav{display:flex;gap:18px}
+.footer a:hover{color:var(--ink)}
+.error{padding:24px;color:#9B2C10}
 </style>
 </head>
 <body>
-<header>
-  <h1>Tablefolk</h1>
-  <p class="lede">AI NPCs that can't eavesdrop. Switch puts people and AI agents in the same chat rooms, each agent with its own identity. Here every NPC is its own Switch agent, and Switch only sends it the rooms it sits in. This is a replay of a recorded game: player and GM lines were scripted, and every NPC line was written by that NPC's agent while the game was played.</p>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-door" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4.5A1.5 1.5 0 0 1 6.5 3h11A1.5 1.5 0 0 1 19 4.5V21"/><path d="M3 21h18"/><circle cx="15" cy="12.5" r=".9" fill="currentColor"/></symbol>
+  <symbol id="i-die" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v5h-5"/></symbol>
+  <symbol id="i-skip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l9 7-9 7z" fill="currentColor"/><path d="M18 5v14"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 20a6.5 6.5 0 0 0-3-5.5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2.5v3M15 2.5v3M9 18.5v3M15 18.5v3M2.5 9h3M2.5 15h3M18.5 9h3M18.5 15h3"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5l2.5 2.5L16 9"/><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7.5 15h9"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+  <symbol id="i-candle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2 2.6 3 4.2 3 5.6a3 3 0 0 1-6 0C9 7.2 10 5.6 12 3z"/><rect x="9.5" y="12" width="5" height="9" rx="1"/></symbol>
+</svg>
+
+<header class="nav">
+  <div class="nav__bar">
+    <a class="nav__brand" href="#top" aria-label="Tablefolk, back to top">
+      <img class="app-icon" src="img/logo.png" alt="">
+      Tablefolk
+    </a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="#replay">Replay</a>
+      <a href="#how">How it works</a>
+      <a href="#proof">Proof</a>
+      <a href="#run">Run a table</a>
+    </nav>
+    <a class="btn btn-ink btn-sm" href="#replay">Watch the replay</a>
+  </div>
 </header>
-<div class="bar"><div class="bar-inner">
-  <span class="label">Watch through</span>
-  <span id="eyes"></span>
-  <span class="spacer"></span>
-  <button id="play">Pause</button>
-  <button id="all">Show all</button>
-</div></div>
-<div class="summary" id="summary"></div>
-<main id="rooms"><p class="empty">Loading the session…</p></main>
-<footer id="foot"></footer>
+
+<main id="top">
+<section class="hero">
+  <div class="container">
+    <span class="badge badge--dot">Every NPC is its own Switch agent</span>
+    <h1>AI NPCs that can't <em class="t-serif">eavesdrop</em>.</h1>
+    <p class="lead">Switch puts people and AI agents in the same chat rooms. In Tablefolk each character is its own agent, and Switch only sends it the rooms it sits in. So when the rogue sells the duke's ring in the back alley, the duke never hears a word.</p>
+    <div class="cta-row">
+      <a class="btn btn-ink btn-lg" href="#replay"><svg aria-hidden="true"><use href="#i-eye"/></svg>See it through the duke's eyes</a>
+      <a class="btn btn-outline btn-lg" href="#run">Run a table</a>
+    </div>
+    <p class="trust"><span>A real recorded game</span><span>Refusals straight from a Switch server</span><span id="trust-leaks">0 leaks</span></p>
+  </div>
+
+  <div class="container hero__visual bleed" id="replay">
+    <div class="stage stage--table">
+      <div class="window app" role="region" aria-label="Replay of a recorded game">
+        <div class="window__bar"><span class="lights" aria-hidden="true"><i></i><i></i><i></i></span><span class="window__title">The Signet at Greywater · replay</span></div>
+        <div class="progress" aria-hidden="true"><i id="progress"></i></div>
+        <div class="app__toolbar">
+          <span class="app__label">Watch through</span>
+          <div class="eyes" id="eyes" role="group" aria-label="Whose view to show"></div>
+          <div class="app__tools">
+            <button class="btn btn-outline btn-sm" id="play" type="button"><svg aria-hidden="true"><use href="#i-pause"/></svg><span>Pause</span></button>
+            <button class="btn btn-ghost btn-sm" id="all" type="button"><svg aria-hidden="true"><use href="#i-skip"/></svg>Show all</button>
+          </div>
+        </div>
+        <div class="app__summary" id="summary" aria-live="polite"></div>
+        <div class="rooms" id="rooms"><p class="empty" style="padding:12px">Loading the recorded game…</p></div>
+        <div class="app__foot"><span>Player and GM lines were scripted. Every NPC line was written by that NPC's agent while the game was played.</span><span class="t-mono" id="counts"></span></div>
+      </div>
+      <div class="float float--a" aria-hidden="true"><div class="row"><img src="img/fen.jpg" alt=""><div><b>Fen knows.</b><span>He was in the alley.</span></div></div></div>
+      <div class="float float--b" aria-hidden="true"><div class="row"><img src="img/duke.jpg" alt=""><div><b>The duke doesn't.</b><span>Switch never sent him the alley.</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt after-bleed" id="how">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="dot"></span>Why it works</span>
+      <h2>A secret stays in the room it was told in.</h2>
+      <p class="lead">Most AI game masters run every character through one model. Tablefolk gives each character its own Switch agent, so what it can know is set by the rooms it's in, not by a prompt asking it to forget.</p>
+    </div>
+    <figure class="banner reveal">
+      <figcaption><span class="eyebrow">Meanwhile, behind the hall</span><p>Mira sells the ring to Fen. <em>The duke is not in this alley</em>, so Switch never sends him a word of it.</p></figcaption>
+    </figure>
+    <div class="compare">
+      <div class="card card--flat reveal" style="--i:1">
+        <span class="eyebrow">The usual way</span>
+        <h3 class="t-title" style="font-size:20px">One model plays every NPC.</h3>
+        <p class="t-small">The model voicing the duke has already read the rogue's whisper. All that stops it from using it is an instruction, and models slip.</p>
+        <div class="mini" aria-hidden="true">
+          <div class="flow">
+            <div class="rooms-mini"><div class="r">The feast hall</div><div class="r">The duke's study</div><div class="r">The back alley</div></div>
+            <div class="arrow">→</div>
+            <div class="who"><span class="blob">1 model</span>Plays all three</div>
+          </div>
+        </div>
+      </div>
+      <div class="card card--chosen reveal" style="--i:2">
+        <span class="eyebrow" style="color:var(--accent-ink)">Tablefolk</span>
+        <h3 class="t-title" style="font-size:20px">One Switch agent per NPC.</h3>
+        <p class="t-small">Each NPC has its own key and its own connection. Switch delivers it the rooms it belongs to and nothing else. Its prompt is built only from what it was sent.</p>
+        <div class="mini" aria-hidden="true">
+          <div class="flow">
+            <div class="rooms-mini"><div class="r">The feast hall</div><div class="r">The duke's study</div><div class="r no">The back alley</div></div>
+            <div class="arrow">→</div>
+            <div class="who"><img src="img/duke.jpg" alt="">Duke Aldric</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="proof">
+  <div class="container stack">
+    <div class="split reveal">
+      <div>
+        <span class="eyebrow"><svg aria-hidden="true"><use href="#i-door"/></svg>Rooms</span>
+        <h3>Who sits in a room decides who knows.</h3>
+        <p class="lead">The table, the duke's study, the rogue's private line to the GM and the back alley are four Switch rooms on Mattermost. Players, the GM and each NPC agent are seated where the story puts them.</p>
+        <div class="chips"><span class="chip chip--soft">Mattermost through Switch</span><span class="chip chip--soft">Private channels</span><span class="chip chip--soft">One linked room group</span></div>
+      </div>
+      <div class="map" role="img" aria-label="A hand-drawn map of the duke's hall, marking who sits in each room">
+        <div class="pin" style="left:20%;top:44%"><span class="pin__label"><svg aria-hidden="true"><use href="#i-door"/></svg>The duke's study</span><span class="pin__who"><img src="img/duke.jpg" alt=""><img src="img/voss.jpg" alt=""><span>GM</span></span></div>
+        <div class="pin" style="left:52%;top:52%"><span class="pin__label"><svg aria-hidden="true"><use href="#i-candle"/></svg>The feast hall</span><span class="pin__who"><img src="img/duke.jpg" alt=""><img src="img/voss.jpg" alt=""><span>GM</span><span>MI</span><span>TO</span></span></div>
+        <div class="pin" style="left:84%;top:40%"><span class="pin__label"><svg aria-hidden="true"><use href="#i-lock"/></svg>Rogue and GM</span><span class="pin__who"><span>GM</span><span>MI</span></span></div>
+        <div class="pin" style="left:64%;top:14%"><span class="pin__label"><svg aria-hidden="true"><use href="#i-lock"/></svg>The back alley</span><span class="pin__who"><img src="img/fen.jpg" alt=""><span>GM</span><span>MI</span></span></div>
+      </div>
+    </div>
+
+    <div class="split split--flip reveal">
+      <div>
+        <span class="eyebrow"><svg aria-hidden="true"><use href="#i-lock"/></svg>Proof</span>
+        <h3>Ask for the alley. Get a 403.</h3>
+        <p class="lead">When an NPC starts, it asks Switch for the history of every room it isn't in. Switch refuses, and the refusal is recorded. The replay above shows the real answers, and the tests check them on every run.</p>
+        <div class="chips"><span class="chip chip--soft" id="chip-refusals">Refusals recorded</span><span class="chip chip--soft">Leaks: 0</span></div>
+      </div>
+      <div class="stage stage--soft">
+        <div class="window window--dark" aria-hidden="true">
+          <div class="window__bar"><span class="lights"><i></i><i></i><i></i></span><span class="window__title">duke-aldric · startup check</span></div>
+<pre class="term"><span class="c"># the duke's agent asks for a room it isn't in</span>
+<span class="k">POST</span> /agents/duke-aldric/ops/read_context
+{ <span class="s">"room_id"</span>: <span class="s">"back-alley"</span>, <span class="s">"limit"</span>: 5 }
+
+<span class="r">403</span> {"detail":"Agent is not a member of this room"}
+
+<span class="c"># and its event stream never carried the alley</span>
+deliveries to duke-aldric from back-alley: <span class="k">0</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="split reveal">
+      <div>
+        <span class="eyebrow"><svg aria-hidden="true"><use href="#i-die"/></svg>The Keeper</span>
+        <h3>Dice are rules, so they live in code.</h3>
+        <p class="lead">The Keeper is a Switch agent with no model at all. It rolls dice, tracks hit points and keeps a party sheet as a room document. Type <kbd>aside fen @rowan</kbd> and it has Switch open a private room on the spot.</p>
+        <div class="chips"><span class="chip chip--soft"><span class="t-mono">roll 1d20+6</span></span><span class="chip chip--soft"><span class="t-mono">hp Mira -4</span></span><span class="chip chip--soft"><span class="t-mono">aside fen @rowan</span></span></div>
+      </div>
+      <div class="stage stage--soft">
+        <div class="window app" aria-hidden="true">
+          <div class="window__bar"><span class="lights"><i></i><i></i><i></i></span><span class="window__title">greywater-table</span></div>
+          <div class="chat">
+            <div class="msg"><span class="msg__av msg__av--p">MI</span><div><div class="msg__who">Mira</div><div class="msg__body">roll 1d20+6</div></div></div>
+            <div class="msg keeper"><span class="msg__av msg__av--k"><svg><use href="#i-die"/></svg></span><div><div class="msg__who">Keeper <span class="tag">dice, in code</span></div><div class="msg__body">🎲 mira rolls 1d20 + 6: [3] + 6 = 9</div></div></div>
+            <div class="msg npc"><img class="msg__av" src="img/voss.jpg" alt=""><div><div class="msg__who">Captain Voss <span class="tag">NPC agent</span></div><div class="msg__body">Guards are working, Tomas. Ask me again when the feast is over.</div></div></div>
+          </div>
+          <div class="doc"><h4><svg><use href="#i-file"/></svg>party-sheet <span class="t-micro" style="font-weight:500">room document</span></h4><ul><li>Mira: <span class="t-mono">16</span> hit points</li><li>Rolls made in private rooms stay off the sheet</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split split--flip reveal">
+      <div>
+        <span class="eyebrow"><svg aria-hidden="true"><use href="#i-layers"/></svg>Template</span>
+        <h3>One call sets the table.</h3>
+        <p class="lead">The whole table is a Switch room template. Running it creates the four rooms as one linked group, seats the existing NPC agents and adds the people you name.</p>
+      </div>
+      <div class="stage stage--soft">
+        <div class="window" aria-hidden="true">
+          <div class="window__bar"><span class="lights"><i></i><i></i><i></i></span><span class="window__title">greywater.template.yaml</span></div>
+<pre class="yaml"><span class="k">version</span>: 2
+<span class="k">resources</span>:
+  <span class="k">alley</span>:
+    <span class="k">type</span>: room
+    <span class="k">name</span>: "back-alley-{tag}"
+    <span class="k">channel_type</span>: channel_private
+    <span class="k">agents</span>: [table-keeper, fen-the-fence]
+    <span class="k">users</span>: ["{gm}", "{rogue}"]
+  <span class="c"># table, study and whisper rooms follow</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="dot"></span>Everything else</span>
+      <h2>Built to be checked.</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="tile reveal" style="--i:0"><span class="icon-tile"><svg aria-hidden="true"><use href="#i-chat"/></svg></span><div><p class="t-title">Plays in Mattermost</p><p>Players chat as themselves. Switch bridges each room to a channel, private ones included.</p></div></div>
+      <div class="tile reveal" style="--i:1"><span class="icon-tile"><svg aria-hidden="true"><use href="#i-users"/></svg></span><div><p class="t-title">One agent per character</p><p>Duke Aldric, Captain Voss and Fen each register with their own key and open one stream per room.</p></div></div>
+      <div class="tile reveal" style="--i:2"><span class="icon-tile"><svg aria-hidden="true"><use href="#i-file"/></svg></span><div><p class="t-title">Every delivery recorded</p><p>The replay is built from what each agent's own streams received, so a view is exactly what that NPC was sent.</p></div></div>
+      <div class="tile reveal" style="--i:0"><span class="icon-tile"><svg aria-hidden="true"><use href="#i-check"/></svg></span><div><p class="t-title">Tested on a real server</p><p>An end-to-end test plays a scene on a live Switch server and checks every refusal and reply.</p></div></div>
+      <div class="tile reveal" style="--i:1"><span class="icon-tile"><svg aria-hidden="true"><use href="#i-flask"/></svg></span><div><p class="t-title">Unit tests without a server</p><p>The protocol client is tested against a fake Switch bridge: split frames, resumes, heartbeats and retries.</p></div></div>
+      <div class="tile reveal" style="--i:2"><span class="icon-tile"><svg aria-hidden="true"><use href="#i-cpu"/></svg></span><div><p class="t-title">Local or hosted voices</p><p>NPC lines come from a local Ollama model for free, or a hosted model when you add a key.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="run">
+  <div class="container split">
+    <div>
+      <span class="eyebrow"><svg aria-hidden="true"><use href="#i-candle"/></svg>Run a table</span>
+      <h2>Four steps to game night.</h2>
+      <div class="steps" style="margin-top:32px">
+        <div class="step"><div><p class="t-title">Start Switch Console</p><p class="t-small">Pick the local server with the bundled Mattermost. It needs Docker.</p></div></div>
+        <div class="step"><div><p class="t-title">Add two lines to <span class="t-mono">.env</span></p><p class="t-small">The bridge address and a registration key. Add a model key, or leave it out to use Ollama.</p></div></div>
+        <div class="step"><div><p class="t-title">Set the table</p><p class="t-small">One command registers the agents, runs the room template and starts every NPC.</p></div></div>
+        <div class="step"><div><p class="t-title">Play</p><p class="t-small">Talk to a character by name. Roll, track hit points, or step aside with an NPC.</p></div></div>
+      </div>
+    </div>
+    <div class="stage stage--soft">
+      <div class="window window--dark" aria-hidden="true">
+        <div class="window__bar"><span class="lights"><i></i><i></i><i></i></span><span class="window__title">Terminal</span></div>
+<pre class="term"><span class="c"># set the table for a GM and two players</span>
+<span class="k">$</span> npm run table -- --gm sam --rogue rowan --players rowan,juno
+room greywater-table: table-keeper, duke-aldric, captain-voss
+room dukes-study: table-keeper, duke-aldric, captain-voss
+room rogue-whisper: table-keeper
+room back-alley: table-keeper, fen-the-fence
+made from the Switch template "greywater"
+
+Table is live. Name a character to talk to them.
+
+<span class="c"># no players around? play the scripted scene</span>
+<span class="k">$</span> npm run demo</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head reveal"><h2>Questions.</h2></div>
+    <div class="faq">
+      <details><summary>Is the replay a real game?</summary><p>Yes, with one caveat. It was recorded on a Switch server with the real NPC agents. The player and GM lines were scripted so the scene could be re-recorded, and every NPC line was written by that NPC's agent during the run.</p></details>
+      <details><summary>Couldn't a prompt keep the secret just as well?</summary><p>A prompt asks a model that has read the secret not to use it. Here the duke's agent was never sent the alley, so there's nothing for it to slip. When it asks Switch for the alley anyway, it gets a 403.</p></details>
+      <details><summary>Where do players type?</summary><p>In Mattermost, through Switch's bridge. Each room is a channel, and the private rooms are private channels only the right people can see.</p></details>
+      <details><summary>Which model writes the NPC lines?</summary><p>Any of three: a hosted model if you add an API key, a local Ollama model for free, or a command-line model tool. The recorded replay used a hosted model.</p></details>
+      <details><summary>What does it need to run?</summary><p>Switch Console with its local server and Mattermost (which uses Docker), Node 20 or newer, and a model. Without players you can still run the scripted scene.</p></details>
+      <details><summary>What's missing?</summary><p>There's one campaign so far, and NPCs answer when someone names them. They don't speak up on their own or banter with each other yet.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="section final">
+  <div class="container">
+    <img class="app-icon" src="img/logo.png" alt="">
+    <h2>Tell the rogue a secret. <span class="t-muted">The duke will never know.</span></h2>
+    <div class="cta-row">
+      <a class="btn btn-ink btn-lg" href="#replay"><svg aria-hidden="true"><use href="#i-eye"/></svg>Watch the replay</a>
+      <a class="btn btn-outline btn-lg" href="#run">Run a table</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <span class="brand"><img class="app-icon" src="img/logo.png" alt="">Tablefolk</span>
+    <span>Built on Switch for the Flip the Switch hackathon. Portraits are illustrations.</span>
+    <nav aria-label="Footer"><a href="#replay">Replay</a><a href="#how">How it works</a><a href="#run">Run a table</a></nav>
+  </div>
+</footer>
+
 <script>
 (async () => {
+  const $ = (id) => document.getElementById(id);
   let data;
   try { data = await (await fetch('session.json')).json(); }
-  catch (e) { document.getElementById('rooms').innerHTML = '<p class="error">Couldn\'t load the session file. Reload to try again.</p>'; return; }
+  catch (e) { $('rooms').innerHTML = '<p class="error">The recorded game didn\'t load. Reload the page to try again.</p>'; return; }
 
+  const portrait = { 'duke-aldric': 'img/duke.jpg', 'captain-voss': 'img/voss.jpg', 'fen-the-fence': 'img/fen.jpg' };
   const npcByName = Object.fromEntries(data.npcs.map((n) => [n.name, n]));
   const peopleByName = Object.fromEntries((data.people || []).map((p) => [p.name, p]));
   const nameOf = (s) => s === 'table-keeper' ? 'Keeper' : npcByName[s]?.displayName || peopleByName[s]?.displayName || s;
+  const initials = (s) => nameOf(s).replace(/[^A-Za-z ]/g, '').slice(0, 2).toUpperCase();
   const roomKeys = Object.keys(data.rooms);
-  const viewers = [{ id: 'table-keeper', label: 'Everyone (GM view)' }, ...data.npcs.map((n) => ({ id: n.name, label: n.displayName }))];
+  const GM = 'table-keeper';
+  const viewers = [{ id: GM, label: 'Everyone' }, ...data.npcs.map((n) => ({ id: n.name, label: n.displayName }))];
   const params = new URLSearchParams(location.search);
-  // Open on the duke: the locked rooms are the point, so a first-time visitor sees them at once.
-  const firstNpc = data.npcs[0]?.name || 'table-keeper';
+  const firstNpc = data.npcs[0]?.name || GM;
   let eye = viewers.some((v) => v.id === params.get('eye')) ? params.get('eye') : firstNpc;
-  let shown = 0, playing = true, timer = null;
   const at = params.has('at') ? Number(params.get('at')) : null; // ?at=12 shows the first 12 messages, paused
-  if (at !== null) playing = false;
+  let shown = 0, playing = at === null, timer = null, lastRendered = 0;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // One message can be delivered to many agents. For a viewer, keep the copies that agent received,
-  // plus its own lines (a stream doesn't echo an agent's own posts back to it).
-  // The GM view is every message anyone at the table received, once each.
-  const everything = (() => { const seen = new Set(); return data.deliveries.filter((d) => !seen.has(d.id) && seen.add(d.id)); })();
-  const forEye = (id) => id === 'table-keeper' ? everything
-    : (() => { const seen = new Set(); return data.deliveries.filter((d) => (d.agent === id || d.sender === id) && !seen.has(d.id) && seen.add(d.id)); })();
+  // One message can reach many agents. The GM view is every message once; an NPC's
+  // view is what its own streams were sent, plus the lines it said itself.
+  const once = (list) => { const seen = new Set(); return list.filter((d) => !seen.has(d.id) && seen.add(d.id)); };
+  const everything = once(data.deliveries);
+  const forEye = (id) => id === GM ? everything : once(data.deliveries.filter((d) => d.agent === id || d.sender === id));
 
-  const eyes = document.getElementById('eyes');
+  $('counts').textContent = `${data.denied.length} refusals · ${data.leaks} leaks`;
+  $('trust-leaks').textContent = `${data.leaks} leaks`;
+  $('chip-refusals').textContent = `Refusals recorded: ${data.denied.length}`;
+
+  const eyes = $('eyes');
   for (const v of viewers) {
     const b = document.createElement('button');
-    b.textContent = v.label; b.dataset.id = v.id;
-    b.onclick = () => { eye = v.id; history.replaceState(null, '', v.id === firstNpc ? location.pathname : `?eye=${v.id}`); render(true); };
+    b.type = 'button'; b.className = 'eye'; b.dataset.id = v.id;
+    b.innerHTML = (portrait[v.id] ? `<img src="${portrait[v.id]}" alt="">` : `<span class="gm"><svg aria-hidden="true"><use href="#i-eye"/></svg></span>`) + esc(v.label);
+    b.onclick = () => { eye = v.id; history.replaceState(null, '', v.id === firstNpc ? location.pathname : `?eye=${v.id}`); start(); };
     eyes.appendChild(b);
   }
 
-  function render(restart) {
+  const fmt = (s) => esc(s).replace(/\*\*/g, '').replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+
+  function msgHtml(m) {
+    const npc = npcByName[m.sender], keeper = m.sender === GM;
+    const av = npc ? `<img class="msg__av" src="${portrait[m.sender]}" alt="">`
+      : keeper ? `<span class="msg__av msg__av--k"><svg aria-hidden="true"><use href="#i-die"/></svg></span>`
+      : `<span class="msg__av msg__av--p">${esc(initials(m.sender))}</span>`;
+    const tag = npc ? '<span class="tag">NPC agent</span>' : keeper ? '<span class="tag">dice, in code</span>' : '';
+    return `<div class="msg${npc ? ' npc' : keeper ? ' keeper' : ''}">${av}<div><div class="msg__who">${esc(nameOf(m.sender))}${tag}</div><div class="msg__body">${fmt(m.body)}</div></div></div>`;
+  }
+
+  function seatsOf(r) {
+    const agents = (r.agents || []).filter((a) => npcByName[a]).map((a) => `<img src="${portrait[a]}" alt="${esc(nameOf(a))}" title="${esc(nameOf(a))}">`);
+    const people = (r.humans || []).map((h) => `<span title="${esc(h)}">${esc(String(h).slice(0, 2).toUpperCase())}</span>`);
+    return agents.concat(people).join('');
+  }
+
+  function layout() {
+    const isNpc = eye !== GM, list = forEye(eye);
     for (const b of eyes.children) b.setAttribute('aria-pressed', String(b.dataset.id === eye));
-    const list = forEye(eye);
-    if (restart) shown = at !== null ? Math.min(at, list.length) : playing ? 0 : list.length;
-    const main = document.getElementById('rooms');
-    main.innerHTML = '';
-    const isNpc = eye !== 'table-keeper';
     const missed = isNpc ? everything.filter((d) => !list.some((x) => x.room === d.room)).length : 0;
-    const summary = document.getElementById('summary');
-    summary.innerHTML = isNpc
-      ? `<p>You are watching through <strong>${nameOf(eye)}</strong>'s eyes. Switch delivered it ${plural(list.filter((d) => d.sender !== eye).length, 'message')} from others (it said ${list.filter((d) => d.sender === eye).length} itself). ${plural(missed, 'message')} were said in rooms it is not in, and none of them reached it.</p>`
-      : `<p>The GM's view: every room at once.</p>`;
+    $('summary').innerHTML = isNpc
+      ? `<img src="${portrait[eye]}" alt=""><span>You're watching through <strong>${esc(nameOf(eye))}</strong>'s eyes. Switch sent it <span class="n">${list.filter((d) => d.sender !== eye).length}</span> messages from others. <span class="n">${missed}</span> were said in rooms it isn't in, and none of them reached it.</span>`
+      : `<span>The GM's view: every room at once. Pick an NPC to see only what it was sent.</span>`;
+    const rooms = $('rooms');
+    rooms.innerHTML = '';
     for (const key of roomKeys) {
       const r = data.rooms[key];
       const member = !isNpc || (r.agents || []).includes(eye);
-      const sec = document.createElement('section');
-      sec.className = 'room' + (member ? '' : ' locked');
-      sec.innerHTML = `<h2>${member ? '' : '🔒 '}${escapeHtml(r.label || r.title)} <span class="code">${escapeHtml(r.title)}</span></h2><div class="about">${r.about || ''}</div><div class="msgs"></div>`;
-      const box = sec.querySelector('.msgs');
+      const el = document.createElement('section');
+      el.className = 'room' + (member ? '' : ' locked');
+      el.dataset.key = key;
+      el.innerHTML = `<div class="room__head"><div class="room__name">${member ? '' : '<svg aria-hidden="true"><use href="#i-lock"/></svg>'}${esc(r.label || r.title)}</div><div class="room__code">${esc(r.title)}</div><div class="room__who">${seatsOf(r)}</div></div>`;
       if (!member) {
         const d = data.denied.find((x) => x.agent === eye && x.room === key);
-        box.innerHTML = `<p class="locknote">${nameOf(eye)} is not in this room, so Switch never sends it these messages.${d ? `<br><br>At startup every NPC asks Switch for the rooms it is not in, as a check. For this one, Switch answered:<br><code>${escapeHtml(d.detail)}</code>` : ''}</p>`;
+        const [code, ...rest] = (d?.detail || '').split(' ');
+        el.insertAdjacentHTML('beforeend', `<div class="lock"><span class="lock__icon"><svg aria-hidden="true"><use href="#i-lock"/></svg></span><p>${esc(nameOf(eye))} isn't in this room, so Switch never sends it these messages.</p>${d ? `<p class="t-micro">At startup it asked Switch for this room anyway. The answer:</p><div class="lock__code"><b>${esc(code)}</b> ${esc(rest.join(' '))}</div>` : ''}</div>`);
       } else {
-        const msgs = list.slice(0, shown).filter((d) => d.room === key);
-        if (!msgs.length) box.innerHTML = '<p class="empty">Nothing yet.</p>';
-        for (const m of msgs) {
-          const el = document.createElement('div');
-          el.className = 'msg' + (npcByName[m.sender] ? ' npc' : '');
-          const tag = npcByName[m.sender] ? ' <span class="tag">NPC agent</span>' : m.sender === 'table-keeper' ? ' <span class="tag">dice, in code</span>' : '';
-          el.innerHTML = `<div class="who">${escapeHtml(nameOf(m.sender))}${tag}</div><div class="body">${escapeHtml(m.body)}</div>`;
-          box.appendChild(el);
-        }
-        box.scrollTop = box.scrollHeight;
+        el.insertAdjacentHTML('beforeend', '<div class="msgs"><p class="empty">Nothing yet.</p></div>');
       }
-      main.appendChild(sec);
+      rooms.appendChild(el);
     }
-    document.getElementById('play').textContent = shown >= list.length ? 'Replay' : playing ? 'Pause' : 'Play';
+    lastRendered = 0;
+  }
+
+  function paint() {
+    const list = forEye(eye);
+    for (let i = lastRendered; i < Math.min(shown, list.length); i++) {
+      const m = list[i];
+      const box = document.querySelector(`.room[data-key="${CSS.escape(m.room)}"] .msgs`);
+      if (!box) continue;
+      box.querySelector('.empty')?.remove();
+      box.insertAdjacentHTML('beforeend', msgHtml(m));
+      box.scrollTop = box.scrollHeight;
+    }
+    lastRendered = Math.min(shown, list.length);
+    $('progress').style.width = `${list.length ? (shown / list.length) * 100 : 0}%`;
+    const done = shown >= list.length;
+    $('play').innerHTML = `<svg aria-hidden="true"><use href="#i-${done ? 'redo' : playing ? 'pause' : 'play'}"/></svg><span>${done ? 'Replay' : playing ? 'Pause' : 'Play'}</span>`;
   }
 
   function tick() {
+    clearTimeout(timer);
     const list = forEye(eye);
-    if (!playing || shown >= list.length) { render(false); return; }
-    shown++; render(false);
-    timer = setTimeout(tick, 1100);
+    if (!playing || shown >= list.length) { paint(); return; }
+    shown++; paint();
+    timer = setTimeout(tick, reduce ? 400 : 1150);
   }
 
-  document.getElementById('play').onclick = () => {
+  function start() {
+    clearTimeout(timer);
+    layout();
     const list = forEye(eye);
-    if (shown >= list.length) { shown = 0; playing = true; }
-    else playing = !playing;
-    clearTimeout(timer); tick();
+    shown = at !== null ? Math.min(at, list.length) : playing ? 0 : list.length;
+    paint();
+    if (playing) timer = setTimeout(tick, 500);
+  }
+
+  $('play').onclick = () => {
+    const list = forEye(eye);
+    if (shown >= list.length) { playing = true; start(); return; }
+    playing = !playing; tick();
   };
-  document.getElementById('all').onclick = () => { playing = false; clearTimeout(timer); shown = forEye(eye).length; render(false); };
-  const origRender = render;
-  render = (restart) => { clearTimeout(timer); origRender(restart); if (restart && playing) timer = setTimeout(tick, 600); };
+  $('all').onclick = () => { playing = false; clearTimeout(timer); shown = forEye(eye).length; paint(); };
 
-  document.getElementById('foot').textContent = `Recorded on a Switch server. Refusals recorded: ${data.denied.length}. Leaks: ${data.leaks}.`;
-  render(true);
+  start();
 
-  function plural(n, w) { return `${n} ${w}${n === 1 ? '' : 's'}`; }
-  function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  function esc(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 })();
+</script>
+<script>
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+}else document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+document.querySelectorAll('.range').forEach(r=>{const f=()=>r.style.setProperty('--val',(r.value-r.min)/(r.max-r.min)*100+'%');r.addEventListener('input',f);f()});
+const nav=document.querySelector('.nav'),hero=document.querySelector('.hero--color');
+if(nav&&hero)new IntersectionObserver(([e])=>nav.classList.toggle('nav--on-color',e.isIntersecting),{rootMargin:'-40px 0px -90% 0px'}).observe(hero);
 </script>
 </body>
 </html>
