@@ -50,8 +50,12 @@ const results = [];
 const check = (name, fn) => { fn(); results.push(name); console.log('ok -', name); };
 
 // 1. Switch refuses every room an NPC is not in.
-check('duke is refused the back alley', () => assert.ok(sink.events.some((e) => e.kind === 'denied' && e.agent === 'duke-aldric' && e.room === 'alley' && /403/.test(e.detail))));
-check('fen is refused the table and the study', () => assert.equal(sink.events.filter((e) => e.kind === 'denied' && e.agent === 'fen-the-fence').length, 2));
+check('Switch answers 403 for the back alley when the duke asks', () => assert.ok(sink.events.some((e) => e.kind === 'denied' && e.agent === 'duke-aldric' && e.room === 'alley' && /403/.test(e.detail))));
+for (const n of campaign.npcs) {
+  const outside = Object.keys(campaign.rooms).filter((k) => !n.rooms.includes(k));
+  check(`${n.displayName} is refused all ${outside.length} rooms it is not in`, () =>
+    assert.deepEqual(sink.events.filter((e) => e.kind === 'denied' && e.agent === n.name).map((e) => e.room).sort(), outside.sort()));
+}
 check('no NPC could read a room it is not in', () => assert.ok(!sink.events.some((e) => e.kind === 'leak')));
 
 // 2. Dice are code.

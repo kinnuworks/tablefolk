@@ -17,13 +17,18 @@ export class SwitchAgent {
 
   onEvent(fn) { this.handlers.push(fn); }
 
-  async op(name, args = {}) {
+  async op(name, args = {}, attempt = 0) {
     const res = await fetch(`${this.baseUrl}/agents/${this.agentId}/ops/${name}`, {
       method: 'POST',
       headers: this.headers({ 'X-Switch-Connection-Id': this.connectionId }),
       body: JSON.stringify(args),
     });
     const text = await res.text();
+    // The stream can drop and come back; an op sent in that gap is refused with 409. Wait and resend.
+    if (res.status === 409 && /not open|reconnect/.test(text) && attempt < 5) {
+      await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      return this.op(name, args, attempt + 1);
+    }
     if (!res.ok) throw new Error(`${this.name} op ${name} -> ${res.status} ${text.slice(0, 300)}`);
     return JSON.parse(text).result;
   }
