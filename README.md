@@ -98,7 +98,7 @@ npm run test:e2e    # against a real Switch server
 npm run doctor      # checks .env, the server, the token, the chat bridge, Mattermost and the model
 ```
 
-The CI workflow runs `npm run verify` and the unit tests with coverage on every push. GitHub hasn't started it yet because the account is locked over billing, so for now run `npm run verify` yourself.
+[CI](https://github.com/kinnuworks/tablefolk/actions/workflows/test.yml) runs `npm run verify` and the unit tests with coverage on every push, on Node 22.
 
 The 42 unit tests cover:
 
@@ -107,7 +107,7 @@ The 42 unit tests cover:
 - the Keeper: dice parsing, hit points, the party sheet leaving out private rolls, `aside` creating a private room with the right people,
 - the model adapters against a fake HTTP server, and the recording behind the live replay: no NPC was ever delivered a message from a room it isn't in, and every refusal is a 403.
 
-Coverage of the modules the unit tests load (`src/env.js`, `keeper.js`, `llm.js`, `npc.js`, `switch-client.js`): 93.1% of lines and 80.4% of branches. The command-line scripts (`table.js`, `demo.js`, `export.js`, `doctor.js`) are exercised by hand and by the e2e test, not by unit tests.
+Coverage of the modules the unit tests load (`src/env.js`, `keeper.js`, `llm.js`, `npc.js`, `switch-client.js`): 92.3% of lines and 79.8% of branches (as CI reports them). The command-line scripts (`table.js`, `demo.js`, `export.js`, `doctor.js`) are exercised by hand and by the e2e test, not by unit tests.
 
 `npm run test:e2e` runs against a real Switch server. Stand-in player agents talk in agent-only rooms, and it checks that:
 
