@@ -317,6 +317,7 @@ body{background-image:url(img/parchment.jpg);background-size:600px}
 .pin__who{display:flex;gap:3px}
 .pin__who img,.pin__who span{width:26px;height:26px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,254,252,.95),var(--shadow-1)}
 .pin__who span{display:grid;place-items:center;background:var(--surface);font-size:9.5px;font-weight:700;color:var(--ink-2)}
+.pin__who span.name{width:auto;padding:0 8px;border-radius:var(--r-pill);font-size:11px}
 @media (max-width:640px){.pin__label{font-size:11px;padding:4px 8px}.pin__who img,.pin__who span{width:20px;height:20px}}
 /* the alley banner */
 .banner{position:relative;margin:0 0 16px;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-2);aspect-ratio:21/8;background:#1E1A15 url(img/alley.jpg) center/cover}
@@ -370,6 +371,7 @@ body{background-image:url(img/parchment.jpg);background-size:600px}
 .room__who{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
 .room__who img,.room__who span{width:24px;height:24px;border-radius:50%;object-fit:cover;flex:none}
 .room__who span{display:grid;place-items:center;background:var(--surface);box-shadow:var(--ring);color:var(--ink-2);font-size:9.5px;font-weight:700;letter-spacing:-.02em}
+.room__who span.name{width:auto;padding:0 8px;border-radius:var(--r-pill);font-size:11px;font-weight:600;letter-spacing:0}
 .msgs{flex:1;min-height:0;overflow-y:auto;padding:12px 12px 16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
 .msg{display:flex;gap:9px;animation:msg-in .45s var(--ease-out) both}
 @keyframes msg-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -560,7 +562,7 @@ body::after{content:"";position:fixed;inset:-50%;z-index:100;pointer-events:none
       <a href="#proof">Proof</a>
       <a href="#run">Run a table</a>
     </nav>
-    <a class="btn btn-ink btn-sm" href="#replay">Watch the replay</a>
+    <a class="btn btn-ink btn-sm" href="https://github.com/kinnuworks/tablefolk">Get the code</a>
   </div>
 </header>
 
@@ -569,12 +571,12 @@ body::after{content:"";position:fixed;inset:-50%;z-index:100;pointer-events:none
   <div class="container">
     <span class="badge badge--dot">Every NPC is its own Switch agent</span>
     <h1>AI NPCs that can't <em class="t-serif">eavesdrop</em>.</h1>
-    <p class="lead">Switch puts people and AI agents in the same chat rooms. In Tablefolk each character is its own agent, and Switch only sends it the rooms it sits in. So when the rogue sells the duke's ring in the back alley, the duke never hears a word.</p>
+    <p class="lead"><a href="https://github.com/sandbox-quantum/switch" style="text-decoration:underline;text-underline-offset:3px">Switch</a> is an open-source platform that puts people and AI agents in the same chat rooms. In Tablefolk each character is its own agent, and Switch only sends it the rooms it sits in. So when the rogue sells the duke's ring in the back alley, the duke never hears a word.</p>
     <div class="cta-row">
       <a class="btn btn-ink btn-lg" href="#replay"><svg aria-hidden="true"><use href="#i-eye"/></svg>See it through the duke's eyes</a>
       <a class="btn btn-outline btn-lg" href="#run">Run a table</a>
     </div>
-    <p class="trust"><span>A real recorded game</span><span>Refusals straight from a Switch server</span><span id="trust-leaks">0 leaks</span></p>
+    <p class="trust"><span>A real recorded game</span><span>Refusals straight from a Switch server</span><span><a href="https://github.com/kinnuworks/tablefolk/blob/main/recordings/greywater-demo.jsonl" style="text-decoration:underline;text-underline-offset:3px" id="trust-leaks">0 leaks</a>, checked by the tests</span></p>
   </div>
 
   <div class="container hero__visual bleed" id="replay">
@@ -650,10 +652,10 @@ body::after{content:"";position:fixed;inset:-50%;z-index:100;pointer-events:none
         <div class="chips"><span class="chip chip--soft">Mattermost through Switch</span><span class="chip chip--soft">Private channels</span><span class="chip chip--soft">One linked room group</span></div>
       </div>
       <div class="map reveal" role="img" aria-label="A hand-drawn map of the duke's hall, marking who sits in each room">
-        <div class="pin" style="left:20%;top:44%;--p:1"><span class="pin__label"><svg aria-hidden="true"><use href="#i-door"/></svg>The duke's study</span><span class="pin__who"><img src="img/duke.jpg" alt=""><img src="img/voss.jpg" alt=""><span>GM</span></span></div>
-        <div class="pin" style="left:52%;top:52%;--p:0"><span class="pin__label"><svg aria-hidden="true"><use href="#i-candle"/></svg>The feast hall</span><span class="pin__who"><img src="img/duke.jpg" alt=""><img src="img/voss.jpg" alt=""><span>GM</span><span>MI</span><span>TO</span></span></div>
-        <div class="pin" style="left:84%;top:40%;--p:2"><span class="pin__label"><svg aria-hidden="true"><use href="#i-lock"/></svg>Rogue and GM</span><span class="pin__who"><span>GM</span><span>MI</span></span></div>
-        <div class="pin pin--alley" style="left:64%;top:14%;--p:3"><span class="pin__label"><svg aria-hidden="true"><use href="#i-lock"/></svg>The back alley</span><span class="pin__who"><img src="img/fen.jpg" alt=""><span>GM</span><span>MI</span></span></div>
+        <div class="pin" style="left:20%;top:44%;--p:1"><span class="pin__label"><svg aria-hidden="true"><use href="#i-door"/></svg>The duke's study</span><span class="pin__who"><img src="img/duke.jpg" alt=""><img src="img/voss.jpg" alt=""><span class="name">GM</span></span></div>
+        <div class="pin" style="left:52%;top:52%;--p:0"><span class="pin__label"><svg aria-hidden="true"><use href="#i-candle"/></svg>The feast hall</span><span class="pin__who"><img src="img/duke.jpg" alt=""><img src="img/voss.jpg" alt=""><span class="name">GM</span><span class="name">Mira</span><span class="name">Tomas</span></span></div>
+        <div class="pin" style="left:84%;top:40%;--p:2"><span class="pin__label"><svg aria-hidden="true"><use href="#i-lock"/></svg>Rogue and GM</span><span class="pin__who"><span class="name">GM</span><span class="name">Mira</span></span></div>
+        <div class="pin pin--alley" style="left:64%;top:14%;--p:3"><span class="pin__label"><svg aria-hidden="true"><use href="#i-lock"/></svg>The back alley</span><span class="pin__who"><img src="img/fen.jpg" alt=""><span class="name">GM</span><span class="name">Mira</span></span></div>
       </div>
     </div>
 
@@ -861,7 +863,7 @@ Table is live. Name a character to talk to them.
 
   function seatsOf(r) {
     const agents = (r.agents || []).filter((a) => npcByName[a]).map((a) => `<img src="${portrait[a]}" alt="${esc(nameOf(a))}" title="${esc(nameOf(a))}">`);
-    const people = (r.humans || []).map((h) => `<span title="${esc(h)}">${esc(String(h).slice(0, 2).toUpperCase())}</span>`);
+    const people = (r.humans || []).map((h) => `<span class="name">${esc(h)}</span>`);
     return agents.concat(people).join('');
   }
 
