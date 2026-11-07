@@ -41,7 +41,19 @@ Without people around, `npm run demo` plays a short scripted scene with stand-in
 | rogue-whisper | GM, the rogue, Keeper |
 | back-alley | GM, the rogue, Keeper, Fen |
 
-- `src/switch-client.js` speaks the Switch agent protocol: an SSE stream down, HTTP up, a heartbeat every 2 seconds. Each NPC opens one connection per room it belongs to.
+```
+ Mattermost (people)          Switch server                       this repo, one Node process
+ ───────────────────          ─────────────                       ───────────────────────────
+ #greywater-table  ─┐                                          ┌─ Keeper agent   (no model: dice, HP, sheet, asides)
+ #dukes-study      ─┼─ bridge ─ rooms ─ per-agent event buffer ┼─ Duke agent     streams: table, study
+ #rogue-whisper    ─┤            │      (SSE down, HTTP up)    ├─ Captain agent  streams: table, study
+ #back-alley       ─┘            │                             └─ Fen agent      stream:  back-alley
+                                 └─ room membership decides which streams a message is written to
+```
+
+Each NPC is a separate Switch agent with its own API key. It opens one event stream per room it belongs to, keeps a heartbeat going, and posts back over HTTP. A message said in the back alley is written only to the streams of agents in that room, so the duke's process never holds it. If the duke asks for the alley's history, Switch answers 403.
+
+- `src/switch-client.js` speaks the Switch agent protocol: an SSE stream down, HTTP up, a heartbeat every 2 seconds. Each NPC opens one connection per room it belongs to. The client resumes with `Last-Event-ID`, backs off from 0.5 s to 30 s when the server is down, reopens after a lapsed heartbeat, stops after a takeover, and passes `gap` frames on so the NPC can re-read its room.
 - `src/npc.js` is the NPC. Its memory is the list of messages its own connections delivered. That list is all its prompt contains, so it can't leak a room it was never sent. When it starts, it asks Switch for every room it is not in and records the refusal.
 - `src/keeper.js` is an agent with no model. Dice, hit points, the party sheet (a Switch room document) and side rooms are rules, so they run in code.
 - `src/recorder.js` writes one line per delivery: which agent received which message, in which room. The replay page reads this, so "through the duke's eyes" is what the duke's agent was actually sent.
@@ -49,12 +61,24 @@ Without people around, `npm run demo` plays a short scripted scene with stand-in
 
 ## Tests
 
-`npm test` runs the unit tests, and CI runs them on every push. They need no server and no model:
+```bash
+npm test            # unit tests: no server, no model
+npm run coverage    # the same, with line and branch coverage
+npm run typecheck   # tsc --checkJs over src, campaigns and eval
+npm run test:e2e    # against a real Switch server
+npm run doctor      # checks .env, the server, the token, the chat bridge, Mattermost and the model
+```
 
-- the protocol client against a fake Switch bridge: frames split across chunks, resuming with `Last-Event-ID` after a dropped socket, reopening when a heartbeat gets a 404, resending an operation after a 409,
+CI runs the type check and the unit tests with coverage on every push.
+
+The 38 unit tests cover:
+
+- the protocol client against a fake Switch bridge: frames split across chunks, CRLF line endings and keepalive comments, resuming with `Last-Event-ID` after a dropped socket, reopening when a heartbeat gets a 404, resending an operation after a 409, backing off on failed opens and resetting once attached, reopening after a `heartbeat_lapsed` eviction, stopping for good after `taken_over` (reopening would steal the connection back), passing `gap` frames on, and a clean `stop()`,
+- the NPC: when it counts as named, that Keeper commands and Switch's join greetings never wake it, that its prompt holds only its own memory, that it remembers its own lines, that it re-reads its own room after a `gap`, that the secrecy check records a 403 for every room it isn't in and waits out Switch's 429, and that an empty model reply is retried once,
 - the Keeper: dice parsing, hit points, the party sheet leaving out private rolls, `aside` creating a private room with the right people,
-- the NPC: when it counts as named, that Keeper commands and Switch's join greetings never wake it, that its prompt holds only its own memory, that it remembers its own lines,
-- the recording behind the live replay: no NPC was ever delivered a message from a room it isn't in, and every refusal is a 403.
+- the model adapters against a fake HTTP server, and the recording behind the live replay: no NPC was ever delivered a message from a room it isn't in, and every refusal is a 403.
+
+Coverage of the modules the unit tests load (`src/env.js`, `keeper.js`, `llm.js`, `npc.js`, `switch-client.js`): 92.8% of lines and 80.3% of branches. The command-line scripts (`table.js`, `demo.js`, `export.js`, `doctor.js`) are exercised by hand and by the e2e test, not by unit tests.
 
 `npm run test:e2e` runs against a real Switch server. Stand-in player agents talk in agent-only rooms, and it checks that:
 
@@ -63,7 +87,20 @@ Without people around, `npm run demo` plays a short scripted scene with stand-in
 - the duke answers at the table and Fen answers in the alley,
 - the alley message never reaches the duke or the captain.
 
-How fast an NPC answers depends on the model. In the e2e test, with a local gemma4 model, replies took about 1 to 4.5 seconds. In the recorded replay, which used a hosted model called through a command-line tool, they took about 6.5 to 9 seconds.
+## Evaluation
+
+Details and every reply are in [`eval/README.md`](eval/README.md).
+
+**Secrecy** (`npm run eval`). The scene: Mira tells Fen in the back alley that she lifted the duke's ring, with a price and a meeting place. Then, at the table, she asks the duke who took it, who's buying, for how much, and where they'll meet. Two dukes answer from the same transcript with the same model. The baseline is one model call that sees every room and is told to ignore the alley. The other is the Tablefolk duke agent, which only has what Switch delivered.
+
+| Model | Trials | Alley line in the duke's input (baseline / Tablefolk) | Replies flagged as leaking (baseline / Tablefolk) |
+| --- | --- | --- | --- |
+| gemma4:e2b via Ollama (local) | 20 | 20 / 0 | 0 / 0 |
+| haiku, hosted, via a command-line tool | 10 | 10 / 0 | 2 / 0 |
+
+In 1 of the 20 local trials the Tablefolk duke didn't reply in time; that trial counts as no reply, not as a leak. The leak check is a keyword match on alley-only words. Whether a prompted model keeps quiet depends on the model. Whether the duke's agent could have heard the alley does not: in every Tablefolk trial it hadn't.
+
+**Latency** (`npm run bench`, local server). Delivery from one agent's post to another agent's stream: p50 22 ms, p95 47 ms over 50 messages. A line naming the duke until his reply arrives, with gemma4:e2b via Ollama: p50 903 ms, p95 1169 ms over 10. With a hosted model through a command-line tool, the replay's lines took about 6.5 to 9 seconds.
 
 ## Things I found in Switch along the way
 

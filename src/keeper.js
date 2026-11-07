@@ -1,3 +1,4 @@
+// @ts-check
 import { isJoinGreeting } from './npc.js';
 // The Keeper is a Switch agent with no model. Dice, hit points and side rooms
 // are rules, so they live in code where they are always right.
@@ -14,14 +15,19 @@ export function roll(expr, rand = Math.random) {
 }
 
 export class Keeper {
+  /**
+   * @param {{ creds: { id: string, apiKey: string }, connect: (creds: any, name: string, rooms: string[]) => any,
+   *           state: { rooms: Record<string, any>, hp?: Record<string, number> }, campaign: any, recorder: any, roomLabel: (id: string) => string }} deps
+   */
   constructor({ creds, connect, state, campaign, recorder, roomLabel }) {
-    Object.assign(this, { creds, connect, state, campaign, recorder, roomLabel });
-    this.conns = new Map();
+    this.creds = creds; this.connect = connect; this.state = state;
+    this.campaign = campaign; this.recorder = recorder; this.roomLabel = roomLabel;
+    /** @type {Map<string, any>} */ this.conns = new Map();
     this.seen = new Set(); // one message can arrive on more than one connection
     this.hp = state.hp || {};
-    this.tableRolls = [];
-    this.sheetId = null;
-    this.npcs = [];
+    /** @type {string[]} */ this.tableRolls = [];
+    /** @type {string | null} */ this.sheetId = null;
+    /** @type {any[]} */ this.npcs = [];
   }
 
   async start() {

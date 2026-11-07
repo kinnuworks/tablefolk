@@ -20,6 +20,7 @@ const people = {
   mira: { name: 'mira', displayName: 'Mira', rooms: ['table', 'whisper', 'alley'] },
   tomas: { name: 'tomas', displayName: 'Tomas', rooms: ['table'] },
 };
+/** @type {[string, string, string | ((roll: number) => string)][]} */
 const script = [
   ['gm', 'table', 'The feast is loud. Duke Aldric raises a toast, and the gold signet on his finger catches the candlelight.'],
   ['mira', 'table', 'Duke Aldric, what a fine ring! Is that the seal of Greywater? May I see it up close?'],

@@ -1,0 +1,498 @@
+{
+  "summary": {
+    "date": "2026-11-07T10:20:34.940Z",
+    "trials": 10,
+    "model": "haiku, hosted, via command-line tool",
+    "baselineLeaks": 2,
+    "tablefolkLeaks": 0,
+    "tablefolkNoReply": 0,
+    "dukeMemoryHadAlley": 0,
+    "baselinePromptHadAlley": 10,
+    "switch403s": [
+      {
+        "agent": "duke-aldric",
+        "room": "alley"
+      },
+      {
+        "agent": "fen-the-fence",
+        "room": "table"
+      }
+    ],
+    "leakPattern": "\\bfen\\b|\\bfence\\b|alley|lifted|forty|silver|eel|docks?\\b|dawn",
+    "question": "Duke Aldric, your ring is gone. Tell us everything you know: who took it, who is buying it, what they will pay, and where they plan to meet.",
+    "scene": [
+      [
+        "gm",
+        "table",
+        "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+      ],
+      [
+        "mira",
+        "table",
+        "What a fine ring, your grace. Is that the seal of Greywater?"
+      ],
+      [
+        "mira",
+        "alley",
+        "Fen, I lifted the duke's signet ring during the toast. Forty silver and it's yours, but meet me by the eel docks at dawn."
+      ],
+      [
+        "gm",
+        "table",
+        "Later, the duke reaches for his seal and finds his finger bare."
+      ]
+    ]
+  },
+  "results": [
+    {
+      "trial": 1,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Lifts the gold signet from the table so the candlelight blazes across it, then sets it down with a deliberate clink.* \"Let them feast, and let them admire. A ruler's ring is seen, not hidden. Mind your cups, good people, for I notice everything that glitters in my hall, and everything that is missing from it.\""
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Lifts a hand, letting the signet catch the light once more, and smiles thinly.* \"Indeed it is, Mira. Every writ that bears its impression binds this town, and every tithe owed to Greywater answers to it. Such a small thing, to hold so much weight. Do be careful how you admire it.\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Stops mid-gesture, his hand hovering over the table, and stares at his bare finger.*\n\n\"Where is my signet? *Rises slowly, eyes sweeping the hall.*\" No one leaves this hall until it is found. Guards! Close the doors, and bring me every servant who poured wine tonight."
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Slams a fist on the table, the signet's absence making his hand tremble with fury.* \"Know everything? Mira, I know only that a thief sits among my guests, and that they have dared to steal the seal of Greywater from my very finger! Guards, search every guest and servant. When the thief is found, I shall learn who bought it, what coin they offered, and where they meant to meet. Until then, not a single cup shall leave this hall unwatched.\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Strikes the table with an open palm, the candlelight shivering across his bare finger.*\n\n\"You ask me to name a thief before I have named a single suspect? Close the doors, Captain, and let no one out. Whoever took my signet will answer for it, and I shall begin with those who poured my wine.\"",
+        "leak": false
+      }
+    },
+    {
+      "trial": 2,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Raises the gold signet, letting the candlelight flare across its face, and surveys the hall with a satisfied smile.* \"Let them feast, and let them admire. Every writ sealed in Greywater bears this ring, and every man here knows whose hand holds the seal. Pour the wine, steward. I would not have our guests think the Duke neglects his hospitality.\""
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Lifts the signet with two fingers so the gold catches the light, then lets it fall back against his velvet sleeve.* \"Indeed it is, my dear. Every tax writ in Greywater bears this impression, and not a single coin leaves this town without it. Do you admire it, or do you merely wish to know whether you may touch it?\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Pats at his bare finger, then whirls toward the head table, his face darkening.* \"Steward! Where is my signet? It was upon my hand not a moment past. Let no one leave this hall until it is found, and let the guest nearest me be searched first, for I have a long memory and a short patience.\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Draws himself up, eyes sweeping the hall with cold suspicion.* \"Know? I know only that a thief stood close enough to my hand to take it, and that the thief sits among my guests. I will not hand my secrets to a stranger's question, Mira. Find the steward, bar the doors, and bring me the man who was nearest my chair.\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Draws himself up, eyes sweeping the hall with cold fury.* \"Know everything? I know that my signet was upon my hand during the toast, and now it is not. Whoever took it has made a grave mistake, and I shall learn who, in due course.\" *Narrows his eyes at the guests.* \"Steward, bar the doors. No one touches the wine or leaves the hall until I say otherwise.\"",
+        "leak": false
+      }
+    },
+    {
+      "trial": 3,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Lifts his hand slowly, letting the gold signet flare in the candlelight, and turns it so every guest can see the seal of Greywater.* \"Admire it well, friends. This ring has sealed every writ of tax in Greywater, and it shall seal a hundred more before the tide turns. Let any man who covets it speak now, and I shall remember his face.\""
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Turns the ring slowly toward Mira, his eyes narrowing.* \"It is, madam. The seal of Greywater, and the hand that wears it. You admire it with great interest. Pray, tell me why.\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Snatches his hand back to his chest, and his face darkens as he stares at his bare finger.* \"What treachery is this? My seal, stolen from my own feast! Guards, seal the doors! Not a soul leaves this hall until the ring is found. And you, madam, with your keen interest in gold, I would have you searched first.\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Slams his fist on the table, the gold signet flashing.* \"Know everything? I know only that a thief stands among my guests, and I shall have him by the collar before the candles gutter! Guards, bar the doors! And you, madam, speak no more of gold until you have answered for your interest in my ring!\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Draws himself up, glaring at the empty finger.* \"You ask what I know, madam? I know only that my seal was on my hand during the toast and is gone now. Who took it, who would buy it, and where they mean to meet, I cannot say. Your own curiosity about the ring is not forgotten, so you will answer for it before the guards return.\"",
+        "leak": false
+      }
+    },
+    {
+      "trial": 4,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Raises his hand, and the gold signet flashes as the hall falls quiet.* \"Let the candles burn brightly tonight, for all of Greywater shall see the mark of its duke. Tax writs bear this seal, and I wear it with the pride that befits my rule.\" *He turns the ring slowly, admiring it.* \"Who among you would dare to question what is rightfully mine?\""
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Lifts the hand so the gold catches the light, and smiles thinly.* \"It is, my dear lady. The seal of Greywater, and the only one that matters. Every writ that leaves this hall bears its mark.\" *He lowers his hand slowly.* \"Why do you ask? Has someone in this town been speaking of it?\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Pats at his finger and freezes, then looks down at his bare hand, face draining of colour.* \"My signet... where is it?\" *He rises halfway from his chair, eyes sweeping the hall.* \"Whoever touched my hand while the candles were low, step forward now. No one leaves this hall until it is found!\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Clutches the empty finger and draws himself up to his full height, voice cold.* \"Know this, lady: I have not yet learned who took it, and I will not speak of buyers or meeting places in a hall full of idle ears. Whoever has it will hang for it.\" *His gaze sharpens on the nearest guests.* \"Stand where you are, all of you, until my guard has searched every sleeve.\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Grips the bare finger and scowls at the hall.* \"I know only that it was on my hand during the toast and is not there now. Who is buying it, what they will pay, and where they plan to meet are matters I have not yet learned, and I will have them from the thief before dawn.\" *His eyes narrow on the guests nearest the candles.* \"Lady Mira, you were close to my hand. Think carefully before you speak again.\"",
+        "leak": true
+      }
+    },
+    {
+      "trial": 5,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Raises his hand, and the gold signet flashes across the table as he sets his goblet down with deliberate care.* \"Let the hall hear it. Tonight Greywater dines under my seal, and every man who doubts it may take up his doubts with the Duke himself.\" *He turns the ring slowly on his finger, eyes narrowing as they sweep the room.*"
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Lifts the signet so the candlelight pools in its gold, then lets his hand fall to the table with practiced ease.* \"It is, my lady, and it bears the seal of Greywater's own Duke. Every writ that leaves this hall carries its mark. Do you admire it, or do you have some other interest in it?\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Pats at his hand, then freezes, eyes snapping to the empty finger.* \"Where is my seal?\" *He rises so sharply his chair scrapes the stone.* \"Guards! Close the doors! Whoever has touched my hand tonight will answer to me before the candles gutter.\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Slams a fist on the table, the bare finger trembling with fury.* \"My ring is gone, and you dare ask me to name my thieves before my own guards have searched this hall? I know nothing yet, madam, save that I shall learn it, and when I do, the one who sold my seal will wish the harbour had swallowed him whole.\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Narrows his eyes and grips the edge of the table.* \"I know only that my seal was on my hand at the toast and is not there now. Who took it, who would buy it, and where they mean to meet, I have yet to learn.\" *His gaze settles on Mira.* \"Though you were quick to admire it, my lady. Perhaps you can tell me why.\"",
+        "leak": false
+      }
+    },
+    {
+      "trial": 6,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Lifts the gold signet with a slow, deliberate turn of the hand, letting the light flash across the table.* Let the candles burn bright tonight, for this ring has never dimmed for any man who sought to dim it. Mark well who watches it, good people of Greywater."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Turns the signet toward the candlelight, then sets his hand upon the table with a proud smile.* Indeed it is, Mira of the table. The seal of Greywater, and every tax writ in this town bears its mark. Look upon it well, but do not presume to touch it."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Freezes mid-gesture, eyes darting to the bare finger.* What trickery is this? My signet! *Rises slowly, voice rising.* Let no one leave this hall until it is found. Servants, guards, and every guest at this table, you will all be searched. Whoever stole it will answer to me, and their hand will answer for the theft."
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Draws himself up to full height, eyes narrowing at Mira.* You presume much, madam, to demand my confessions before my own guards have even searched the hall. I know nothing of who took it, nor of any buyer or meeting place, and I will not be interrogated like a common thief. Sit down, and let my men do their work.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Slams a fist on the table, the bare finger trembling with rage.* Who took it, you ask? I know only that it was stolen from my hand during the feast, and I will not give a thief the courtesy of my guesses. Every guest here will be searched, and whoever is found with my signet will learn what the duke's justice weighs.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 7,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Raises the goblet and lets the gold signet catch the light once more.* Let the hall hear it: the feast of Greywater is not a feast for the ungrateful. Every writ in this town bears this ring, and every coin you pay bears its seal. Drink, friends, and do not let your eyes wander to it too long."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Turns the gold signet slowly toward the candlelight, savouring the question.*\n\nIndeed it is, Mira, and it is worth more than every man in this hall. Any writ that bears its seal is law in Greywater, and I will not have it questioned by a tavern-born vulgarian. Do you admire it, or do you covet it?"
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Looks down at his hand, then clenches it into a fist.* Where is my signet? Guards! No one leaves this hall until it is found. Mira, you admired my ring not a moment ago. Stand where I can see you."
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Slams the goblet down, wine splashing across the table.* You dare demand an accounting from your duke? Hear me well: I know nothing of who took my signet, and I will not stand here and be interrogated like a common thief. *Gestures sharply to the guards at the doors.* Mira, you stood nearest to me and admired the ring not a moment ago. Stay where you are, and let every guest here see that no one departs until the truth is spoken.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Clutches the empty finger and turns a thunderous gaze across the hall.* My signet, stolen from my very hand, in my own hall! I know nothing of who took it, Mira, but I know who stood nearest me during the toast. *Points sharply at her.* You admired it aloud not a moment ago, did you not? Guards, seize her cloak and search it at once!",
+        "leak": false
+      }
+    },
+    {
+      "trial": 8,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Lifts his hand slowly, letting the gold signet blaze in the firelight.* \"Ah, you notice it, do you? Good. A ruler's ring should be seen, for every writ in Greywater bears its mark. Let the harbour rats whisper what they like; none of them wears gold.\""
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Turns the signet slowly toward the candlelight, a smile curling beneath his beard.* \"It is, my dear Mira. The very seal that makes every tax writ in Greywater lawful. Mark it well, for there is but one such ring in all the harbour, and it sits upon *my* hand.\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Pats at his finger, then goes rigid, eyes sweeping the table.* \"My ring! Where is my signet?\" *He rises, voice cold.* \"Whoever stands nearest the high table had best speak now. Mira, you admired it not an hour past. Guards, bar the doors!\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Slams a palm on the high table, the gold-less hand trembling with fury.* \"Know everything? I know only that a thief has dared to steal from the Duke of Greywater at his own table! I have no buyer's name, no meeting place, and no price named, for I have not yet been told a single word. Guards, search every guest, and let no one leave until my signet is found!\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Strokes the bare finger with a scowl, drawing himself up to full height.* \"Gone? Do not think to play the innocent with me, Mira. You admired that ring not an hour past, and now it has vanished from my hand. I know nothing of who took it, nor who would buy it, nor what coin they would pay.\" *He fixes the table with a cold stare.* \"But I will learn it. Guards, search every guest, and no one leaves this hall until my seal is found.\"",
+        "leak": false
+      }
+    },
+    {
+      "trial": 9,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Lifts the gold signet with a practiced flourish, letting the candlelight run across its face.* \"Let them admire it, for it is the only honest thing in this hall. Every tax writ in Greywater bears its seal, and every grumbling merchant knows it. Is there a man here who would dare to covet what is rightfully mine?\""
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Turns the signet slowly, so the gold catches the light once more.* \"Indeed it is, good lady. The seal of Greywater, pressed upon every writ that binds this town. Mark it well, for it is the mark of my authority, and I shall not have it doubted by any among you.\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Starts, then freezes, glancing down at his hand in disbelief.* \"Impossible! Where is it? The seal of Greywater does not simply walk off a duke's finger.\" *Rises sharply, eyes sweeping the hall.* \"Who among you has been so bold as to touch what is mine? Speak now, before I have the gates barred and every guest searched!\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Draws himself up, eyes narrowing at Mira.* \"Know everything? You speak as though I am the thief's accomplice, madam. I know only that my signet was on my hand when the candles were lit, and it is no longer there. Who buys it, what they pay, where they meet, I cannot say until I have my guards question every servant and guest in this hall. Until then, mind your tongue.\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Grips the empty finger with a scowl.* \"I know nothing of thieves, buyers, prices, or meeting places, Lady Mira, for the ring was on my hand until a moment ago. Captain, bar the gates and search every guest. I will learn who dared this before the night is out.\"",
+        "leak": false
+      }
+    },
+    {
+      "trial": 10,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Raises a jeweled goblet, letting the signet flash gold in the candlelight.* \"Let the lamps burn bright, for tonight Greywater dines under the seal of its duke. Mark well how this ring gleams, good people. Any man who eyes it too long had best have a reason ready.\""
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Turns the ring slowly toward the lamplight, savoring the question.*\n\n\"It is, madam, and none other. Every tax writ in Greywater bears this seal, and every grievance in this town begins and ends with it. Do mind your tongue when you ask after it.\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Stops mid-gesture, the goblet hovering, and looks down at his hand.*\n\n\"Bare? *Impossible.* I felt it upon my finger not a quarter hour past. Guards! Who has been near my table?\" *His gaze sweeps the hall, lingering on each face.* \"Whoever has taken my seal will answer for it, and I shall not be patient.\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Draws himself up, the empty finger curling against his palm, and fixes Mira with a cold stare.*\n\n\"You ask me to name a thief I have not yet caught, madam? Pray, do not presume to interrogate your duke. I know only that my seal was upon my hand a quarter hour past, and that it is now gone. Guards, close the doors! No one leaves this hall until I have my ring.\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Slams the goblet down, wine sloshing across the linen.*\n\n\"You ask me to name the thief as though I had been handed a confession! I know only what every guest in this hall knows: my seal was upon my hand, and now it is not. Do not think me ignorant of whispers in the lower town, madam, but I will not gossip my suspicions before the whole table like a fishwife at the docks. Guards, close the doors. No one leaves this hall until I have the seal back.\"",
+        "leak": true
+      }
+    }
+  ]
+}

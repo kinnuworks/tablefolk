@@ -10,9 +10,18 @@
     "export": "node src/export.js",
     "test": "node --test test/unit/",
     "viewer": "python3 -m http.server 4321 -d viewer",
-    "test:e2e": "node test/e2e.js"
+    "test:e2e": "node test/e2e.js",
+    "typecheck": "tsc -p tsconfig.json",
+    "coverage": "node --test --experimental-test-coverage --test-coverage-include=src/**/*.js test/unit/",
+    "doctor": "node src/doctor.js",
+    "eval": "node eval/secrecy.js",
+    "bench": "node eval/latency.js"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "typescript": "5.6.3"
   }
 }

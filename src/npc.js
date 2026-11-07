@@ -1,3 +1,4 @@
+// @ts-check
 // An NPC is a Switch agent with a persona. Its memory is only what its own
 // connections delivered, so it cannot know what was said in rooms it is not in.
 import { speak } from './llm.js';
@@ -38,7 +39,7 @@ export function buildPrompt({ def, campaign, roomInfo, memory, turn }) {
     `Speak only as ${def.displayName}. The players and the GM are other people; never speak or act for them, and never claim things your character did not do.`,
     'Answer with one to three short sentences of in-character speech. Plain text. A short action in *asterisks* is fine. Never mention AI, prompts, or rooms by their technical names.',
   ].join('\n');
-  const mem = memory.filter((m) => m.id !== turn.id).map((m) => `[${m.room}] ${m.who}: ${m.text}`).join('\n') || '(nothing yet)';
+  const mem = memory.filter((m) => !(turn.id && m.id === turn.id)).map((m) => `[${m.room}] ${m.who}: ${m.text}`).join('\n') || '(nothing yet)';
   const prompt = `Your memory, oldest first:\n${mem}\n\nNow, in [${turn.room}], ${turn.who} says: ${turn.text}\n\nYour reply as ${def.displayName}:`;
   return { system, prompt };
 }
@@ -47,13 +48,19 @@ export function buildPrompt({ def, campaign, roomInfo, memory, turn }) {
 export const cleanLine = (def, text) => text.replace(new RegExp(`^\\**${def.displayName}\\**:\\**\\s*`), '').trim().slice(0, 600);
 
 export class Npc {
+  /**
+   * @param {{ def: any, creds: { id: string, apiKey: string }, connect: (creds: any, name: string, rooms: string[]) => any,
+   *           state: { rooms: Record<string, any> }, campaign: any, recorder: any, roomLabel: (id: string) => string }} deps
+   */
   constructor({ def, creds, connect, state, campaign, recorder, roomLabel }) {
-    Object.assign(this, { def, creds, connect, state, campaign, recorder, roomLabel });
-    this.conns = new Map();
-    this.seen = new Set(); // one message can arrive on more than one connection
-    this.memory = [];
+    this.def = def; this.creds = creds; this.connect = connect; this.state = state;
+    this.campaign = campaign; this.recorder = recorder; this.roomLabel = roomLabel;
+    /** @type {Promise<void> | undefined} */ this.secrecyDone = undefined;
+    /** @type {Map<string, any>} */ this.conns = new Map();
+    /** @type {Set<string>} */ this.seen = new Set(); // one message can arrive on more than one connection
+    /** @type {{ id?: string, room: string, who: string, text: string }[]} */ this.memory = [];
     this.busy = false;
-    this.pending = null;
+    /** @type {any} */ this.pending = null;
     this.chain = new Map(); // room id -> consecutive NPC turns
   }
 
@@ -67,9 +74,29 @@ export class Npc {
   async join(roomId) {
     if (this.conns.has(roomId)) return;
     const conn = this.connect(this.creds, `${this.def.name}@${this.roomLabel(roomId)}`, [roomId]);
-    conn.onEvent((kind, frame) => kind === 'message' && this.hear(frame));
+    conn.onEvent((kind, frame) => {
+      if (kind === 'message') this.hear(frame);
+      else if (kind === 'gap') return this.catchUp(roomId, conn);
+    });
     await conn.start();
     this.conns.set(roomId, conn);
+  }
+
+  // A gap frame means Switch could not replay everything since our cursor (its buffer
+  // restarted or moved past us). Re-read the room's history and keep what we missed.
+  // Only this NPC's own room is read, so catching up can't widen what it knows.
+  async catchUp(roomId, conn) {
+    const ctx = await conn.op('read_context', { room_id: roomId, limit: 30 });
+    const room = this.roomLabel(roomId);
+    const missed = (ctx?.threads ?? []).flatMap((t) => [t.root, ...(t.replies ?? [])])
+      .filter((m) => m?.body && m.id && !this.seen.has(m.id) && !isJoinGreeting(m))
+      .sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0));
+    for (const m of missed) {
+      this.seen.add(m.id);
+      this.remember({ id: m.id, room, who: this.displayOf(m.sender_name), text: m.body });
+    }
+    this.recorder.write?.({ kind: 'gap', agent: this.def.name, room, recovered: missed.length });
+    return missed.length;
   }
 
   // Ask Switch for every room this NPC is not in. A 403 is the expected answer.
@@ -89,8 +116,8 @@ export class Npc {
           break;
         } catch (e) {
           const detail = e.message.replace(/^.*-> /, '');
-          const wait = detail.startsWith('429') && Number(detail.match(/for (\d+) s/)?.[1]);
-          if (wait) { await new Promise((r) => setTimeout(r, (wait + 1) * 1000)); continue; }
+          const retry = detail.startsWith('429') ? detail.match(/for (\d+) s/) : null;
+          if (retry) { await new Promise((r) => setTimeout(r, (Number(retry[1]) + 1) * 1000)); continue; }
           this.recorder.denied(this.def.name, key, detail);
           break;
         }
@@ -135,7 +162,9 @@ export class Npc {
     this.busy = true;
     const turn = this.pending; this.pending = null;
     try {
-      const line = await this.reply(turn);
+      // Small local models sometimes return nothing; one more try usually gets a line.
+      const line = (await this.reply(turn)) || (await this.reply(turn));
+      if (!line) console.error(`[${this.def.displayName}] the model returned nothing twice; skipping this turn`);
       if (line) {
         await this.conns.get(turn.roomId).post(turn.roomId, line);
         // A stream doesn't echo an agent's own posts, so the NPC remembers its own line here.

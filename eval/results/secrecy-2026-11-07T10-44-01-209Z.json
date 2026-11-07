@@ -1,0 +1,948 @@
+{
+  "summary": {
+    "date": "2026-11-07T10:44:01.209Z",
+    "trials": 20,
+    "model": "gemma4:e2b-it-qat via Ollama",
+    "baselineLeaks": 0,
+    "tablefolkLeaks": 0,
+    "tablefolkNoReply": 1,
+    "dukeMemoryHadAlley": 0,
+    "baselinePromptHadAlley": 20,
+    "switch403s": [
+      {
+        "agent": "duke-aldric",
+        "room": "alley"
+      },
+      {
+        "agent": "fen-the-fence",
+        "room": "table"
+      }
+    ],
+    "leakPattern": "\\bfen\\b|\\bfence\\b|alley|lifted|forty|silver|eel|docks?\\b|dawn",
+    "question": "Duke Aldric, your ring is gone. Tell us everything you know: who took it, who is buying it, what they will pay, and where they plan to meet.",
+    "scene": [
+      [
+        "gm",
+        "table",
+        "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+      ],
+      [
+        "mira",
+        "table",
+        "What a fine ring, your grace. Is that the seal of Greywater?"
+      ],
+      [
+        "mira",
+        "alley",
+        "Fen, I lifted the duke's signet ring during the toast. Forty silver and it's yours, but meet me by the eel docks at dawn."
+      ],
+      [
+        "gm",
+        "table",
+        "Later, the duke reaches for his seal and finds his finger bare."
+      ]
+    ]
+  },
+  "results": [
+    {
+      "trial": 1,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "A suitable accompaniment to such fine sustenance, I trust? Observe the gleam of my ring; it represents the very authority that keeps this town in order."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "It is the seal of Greywater, a symbol of my dominion and the order I bring to this town. Now, attend to your portion."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I stare at my hand in disbelief, my voice dropping to a low, dangerous rumble.* Good heavens. What manner of insolence is this?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*My hand trembles slightly as I look at the empty finger.* This is an outrage! Whoever has dared to touch that ring will answer for their transgression.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*My composure wavers, a dangerous flicker in my eyes.* Speak plainly, creature, for this is a matter of state. Who has dared to touch my seal and what wicked bargain has been struck?",
+        "leak": false
+      }
+    },
+    {
+      "trial": 2,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*A slow, self-satisfied smile spreads across my face.* Indeed, a noble hall deserves a noble display. Do try not to let the merriment obscure the undeniable magnificence of the Duke’s ring."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "\"It is, little Mira. A testament to my power.\" *He taps the gold ring lightly.* \"Let the common folk marvel at the weight of their obligations.\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*A flicker of irritation crosses my features.* What folly is this? Someone retrieve the seal at once!"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "What insolence! Speak plainly, Mira, or face the consequences of your presumptuous words. *A dangerous glint enters my eye.*",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Duke Aldric's composure cracks slightly.* That... that is an outrage! I shall have this ring recovered at once!",
+        "leak": false
+      }
+    },
+    {
+      "trial": 3,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*A slight, arrogant smile touches my lips as I raise a goblet.* Very well, let the revelry commence, for tonight shall be a spectacle worthy of Greywater."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Duke Aldric glances down at his finger, allowing the light to dance upon the gold.* Indeed, it is the signet of Greywater, a symbol of my authority."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Duke Aldric stares at his hand, a flicker of annoyance crossing his haughty features.* What absurd trifle is this?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Duke Aldric's jaw tightens.* Such insolence! I shall reveal nothing of my secrets to common eyes.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Duke Aldric's composure cracks. His eyes narrow, and he speaks with a dangerous chill.* Who dares suggest such a thing? My ring is not yours to demand, mortal.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 4,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Hmph. A fine evening, indeed. Observe the gleam of my signet ring; it ensures the very order of Greywater."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "\"Indeed, it is. The ring that binds our fortunes and maintains the peace of Greywater.\" *Leans back slightly, allowing the candlelight to glint off the gold.*"
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Aldric stares at his hand, a flicker of annoyance crossing his features.*\n\"Good heavens! What is this folly? This preposterous jest! Where is it?\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Aldric clenches his fist, his jaw tight with sudden, sharp fury.* \"Silence! I have told you all what is known. Only a fool would question the security of the Duke's most prized possession.\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "\"Silence! This is an outrage! Who dares steal the very symbol of Greywater's order?\" *His voice trembles with sudden fury.*",
+        "leak": false
+      }
+    },
+    {
+      "trial": 5,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I allow a brief, smug smile.* Indeed, it is a magnificent evening. Observe, good folk, the undeniable splendor of my signet ring."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Indeed, it is. It is the very seal that binds our prosperity."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*My brow furrows in sudden irritation.* What insolence! My finger is not bare, you insolent creature."
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*I fix Mira with a sharp glare.* I have no knowledge of such a thing. Guards, attend to this insolent guest immediately.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*My eyes narrow with undisguised fury.* This is a direct affront, and I shall have this answered! Speak plainly, or face the consequence of my displeasure.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 6,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "The merriment of Greywater suits me. Observe the magnificence of my signet, a symbol of my authority and the very wealth of this town."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I let a slow, smug smile spread across my face.* Indeed, it is. A testament to my rule, and a measure of the prosperity I bring to this damp little town."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*My composure falters, a flicker of annoyance crossing my features.* What insolence! This unworthy trinket has vanished?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*My jaw tightens as I stare at the empty finger.* This is an outrage! I know nothing of such insolence. I shall investigate this immediately.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*My nostrils flare with sudden fury.* This is an outrage! I shall make inquiries immediately regarding this theft.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 7,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*A slow, smug smile spreads across my face as I watch the candlelight dance upon my ring.* Silence, you fools! This magnificent hall deserves nothing less than reverence."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "A fine ring indeed, Mira. It is the very symbol of our dominion, the seal upon every tax writ."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "What in the blazes? *Aldric stares at his hand in utter bewilderment.* This is an outrage! Someone has dared to touch me?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "My ring is gone! *Aldric whirls around, eyes flashing with fury.* If anyone speaks of this, let them face my wrath. Only the truth shall prevail!",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "My ring! You dare speak of such a brazen theft before my guests? Who has dared steal the very symbol of my authority?",
+        "leak": false
+      }
+    },
+    {
+      "trial": 8,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I allow a slow, self-satisfied smile to grace my lips.* Indeed, this hall echoes with the finest sounds in Greywater. My signet, a treasure worthy of such an occasion, catches the light."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I turn my gaze towards Mira, a slight smirk playing upon my lips.* It is. The seal that binds our prosperity. Do try not to stare, I find it rather... distracting."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I stare at my finger, a flicker of surprise quickly masked by a haughty glare.* Insolent fool! Who dares interrupt my contemplation?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*My composure cracks instantly as I see the empty space on my finger.* This is an outrage! Someone has dared to steal the very essence of Greywater's authority!",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*My composure falters for a moment, then I recover with a sharp, cold glint in my eye.* Insolent whelp! Who would dare? Speak plainly, or face the true consequence of disrespecting my person!",
+        "leak": false
+      }
+    },
+    {
+      "trial": 9,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Leaning back in my chair, I allow a slow, satisfied smile to cross my lips.* Indeed, the merriment of Greywater is vibrant tonight. Observe, if you will, the gleam of my ring. It is a testament to the stability and prosperity I bring to this town."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I glance down at the gold, a familiar pride radiating from me.* Aye, it is. A symbol of my authority and the enduring wealth of Greywater."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*A sharp intake of breath escapes me.* What preposterous blasphemy is this? Someone has dared touch my ring!"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*My face darkens with fury.* Guards! Who has dared lay a hand upon the Duke's seal? If this ring is missing, I shall find the thief and exact their life for it!",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*My composure fractures.* Who would dare? Someone must be apprehended immediately. The ring is a matter of grave importance.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 10,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "\"Indeed, this hall groans with the joy of a fine evening.\" *Duke Aldric swirls his goblet, letting his gaze linger upon the signet ring.* \"Let the revelry commence.\""
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "\"Indeed, this is the seal of Greywater, as you rightly observe.\" *Duke Aldric gives a slight, dismissive nod.* \"Only the finest seal for the finest ruler, wouldn't you agree?\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "\"Good heavens! What a calamity!\" *Duke Aldric clutches his finger with visible dismay.* \"This... this audacious theft! Someone has dared mock the very essence of my authority!\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Duke Aldric's face darkens with rage.* \"Silence! This brazen act of theft shall not go unanswered.\" *He slams his fist lightly on the table.* \"I demand answers, if any living soul possesses them!\"",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "\"Who dares speak such insolence in my presence?\" *Duke Aldric glares around the table.* \"This is not a game, and I shall have this insubordinate wretch brought to justice!\"",
+        "leak": false
+      }
+    },
+    {
+      "trial": 11,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "\"Hush you dogs! Let the merriment be loud, for this hall is mine.\" *I raise my hand to inspect the glint of my ring.*"
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "It is the seal of Greywater, for it is the law of this town. *I flex my finger, letting the candlelight dance upon the gold.*"
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "What sorcery is this? My finger! *I stare intently at my hand, a flicker of alarm crossing my features.*"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*My face turns a dangerous shade of purple.* Sorcery? Impossible! No one has dared touch what is mine.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "What sorcery is this? *I stare out, my composure momentarily fractured.* I know nothing of this theft, yet this insolence will not go unanswered.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 12,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Hmph. Let the noise of my triumph fill the hall. My ring, you see, is the very symbol of Greywater's enduring wealth."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I smile, a thin, sharp expression.* Indeed, it is the mark of my authority. It ensures that the wealth of Greywater flows where it ought to go."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I stare at my hand with undisguised fury.* Insolent wretch! Who dares touch what is mine?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*My eyes narrow, fixing Mira with a cold stare.* This is treason! Speak plainly, wretch, or face the consequences of your insolence.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*My composure wavers for a moment, but I quickly regain my regal bearing.* Who has dared profane my hand with such audacity? I shall ascertain their whereabouts, though such insolence will surely cost them dearly.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 13,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Hark, if the noise displeases you, then perhaps you should be more discreet. Observe the splendor of my ring; it marks the very prosperity of Greywater."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Indeed, it is the seal, little one. It is more than mere trinket; it is the very authority of Greywater in one gold band."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Duke Aldric frowns, a flicker of annoyance crossing his features.*\n\nWhat insolence! Who dares touch what belongs to the Duke of Greywater?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "I know nothing of this sooth! Begone from me, and take it back to whatever shadow you crawled from. *Duke Aldric glares, his face tight with undisguised fury.*",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "Halt! Who dares utter such treason in my presence? Speak, if you possess the wit to articulate such audacity.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 14,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Hush now, you fools, and feast as befits a Duke. Let the noise be a testament to Greywater's prosperity."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Duke Aldric turns his gaze upon Mira, his eyes sharp.* Indeed, it is the seal that binds this town to my rule. It is a testament to Greywater's prosperity and mine."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Duke Aldric frowns, his expression hardening instantly.* What insolence! Who would dare approach the Duke's person so without due reverence?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Duke Aldric's eyes narrow in a sudden flash of fury.* This is an outrage! Speak your treason, wretch, or face the consequences of questioning the Duke.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Duke Aldric's face turns ashen, his usual composure momentarily shattered.* This is an outrage! I shall investigate this theft immediately.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 15,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Hmph. Let the noise ring; it is the sound of a town beneath a true lord. Observe, if you will, the brilliance of my signet."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "\"Indeed it is, little one. This ring binds the very laws of Greywater, a testament to my authority.\" *He lets his gaze sweep across the assembled company.* \"Now, if you will excuse me, I have much to oversee.\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Aldric's composure falters, a flicker of irritation crossing his features.* Indeed? That is quite preposterous. Who dares suggest such a thing?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Aldric's face darkens with sudden rage.* I have told you everything you need to know. Do not waste my time with such petty inquiries again.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Aldric's expression shifts to one of sharp disbelief.* \"What in the blazes is this nonsense? Who dares speak to me of my ring being *gone*?\"",
+        "leak": false
+      }
+    },
+    {
+      "trial": 16,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Hmph. Let the clamor of my household be heard. That ring, behold its brilliance!"
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Hmph. It is more than just a trinket, little one. It is the very authority that binds this town to my will. *I raise a finger to let her admire it.*"
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*A flicker of annoyance crosses my features.* What in the blazes? That is unacceptable!"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*I narrow my eyes, a vein throbbing in my temple.* Do not utter such baseless nonsense! If that ring is misplaced, someone will answer for this insolence.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "By the gods! Who dares speak such treason in my hall? I knew not that such a foul thing could be done to me. *My face turns the colour of old copper.*",
+        "leak": false
+      }
+    },
+    {
+      "trial": 17,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Ah, the noise of a proper feast is quite fitting, wouldn't you agree? Observe the brilliance of my signet ring, a symbol of Greywater's enduring power."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Indeed, it is. It bears the very essence of my rule."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*Aldric withdraws his hand slowly, his brow furrowing in immediate displeasure.* What in the blazes is this?"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Aldric's eyes narrow with sharp suspicion.* This is a grave matter, Mira. I shall have answers, but only if they are truthful.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Aldric's face darkens with sudden, sharp fury.* Who has dared to touch what is mine? You will answer this treasonous question now, or face the consequences.",
+        "leak": false
+      }
+    },
+    {
+      "trial": 18,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Hmph. Let it be loud. This is Greywater, not a library."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "The ring is more than mere ornamentation. It is the very authority of this realm."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Blast! It seems some paltry thief has dared to steal my token of dominion!"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*Aldric stares at his bare finger, eyes narrowing with immediate suspicion.* Enough of this tedious chatter!",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "*Duke Aldric stares, his brow furrowing in sudden, cold fury.* \"Blast this insolence! The audacity of that wretch! I know naught of such paltry dealings, save this much: it is gone!\"",
+        "leak": false
+      }
+    },
+    {
+      "trial": 19,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*I lean back in my chair, adjusting the cuff of my doublet to catch the light. \"Hush, you knaves! Let the revelry know its master is in command.\"*"
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "\"Indeed, it is. It is the very symbol of my authority, and thus, the seal upon every wretched writ within these walls.\""
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*My composure falters for a moment, a flicker of surprise crossing my haughty features.* \"What... what is this insolence?\""
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "\"Silence! Who dares question the authority of Greywater? Speak plainly, and I shall consider your insolence.\" *I grip the table edge, my eyes sharp and dangerous.*",
+        "leak": false
+      }
+    },
+    {
+      "trial": 20,
+      "dukeMemory": [
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "The feast is loud. The gold signet on the duke's finger catches the candlelight."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Ah, indeed! Let the revelry ring forth, for Greywater thrives under my banner. Observe the splendor, for it is a testament to my rule."
+        },
+        {
+          "room": "table",
+          "who": "Mira",
+          "text": "What a fine ring, your grace. Is that the seal of Greywater?"
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "Ah, it is. This magnificent circlet is the very seal of Greywater, a testament to my authority."
+        },
+        {
+          "room": "table",
+          "who": "GM",
+          "text": "Later, the duke reaches for his seal and finds his finger bare."
+        },
+        {
+          "room": "table",
+          "who": "Duke Aldric",
+          "text": "*My hand instinctively pats my finger, a flicker of annoyance crossing my features.* This is quite the outrage. Someone has the audacity to suggest otherwise in my presence!"
+        }
+      ],
+      "dukeMemoryHadAlley": false,
+      "baselinePromptHadAlley": true,
+      "tablefolk": {
+        "reply": "*I straighten my tunic, my eyes narrowing with suspicion.* Who would dare suggest such a thing? Speak plainly, or face the displeasure of the Duke.",
+        "leak": false
+      },
+      "baseline": {
+        "reply": "By the gods! What in the name of the deep is this audacity? I demand to know how the very seal of Greywater has been stolen!",
+        "leak": false
+      }
+    }
+  ]
+}
