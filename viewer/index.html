@@ -43,7 +43,7 @@
 <body>
 <header>
   <h1>Tablefolk</h1>
-  <p class="lede">AI NPCs that can't eavesdrop. Switch puts people and AI agents in the same chat rooms, each agent with its own identity. Here every NPC is its own Switch agent, and Switch only sends it the rooms it sits in. This is a replay of a recorded game: player and GM lines were scripted, and every NPC line was written live by that NPC's agent.</p>
+  <p class="lede">AI NPCs that can't eavesdrop. Switch puts people and AI agents in the same chat rooms, each agent with its own identity. Here every NPC is its own Switch agent, and Switch only sends it the rooms it sits in. This is a replay of a recorded game: player and GM lines were scripted, and every NPC line was written by that NPC's agent while the game was played.</p>
 </header>
 <div class="bar"><div class="bar-inner">
   <span class="label">Watch through</span>
@@ -99,7 +99,7 @@
     const missed = isNpc ? everything.filter((d) => !list.some((x) => x.room === d.room)).length : 0;
     const summary = document.getElementById('summary');
     summary.innerHTML = isNpc
-      ? `<p>You are watching through <strong>${nameOf(eye)}</strong>'s eyes. It heard ${plural(list.filter((d) => d.sender !== eye).length, 'message')} and said ${list.filter((d) => d.sender === eye).length}. ${plural(missed, 'message')} were said in rooms it is not in, and none of them reached it.</p>`
+      ? `<p>You are watching through <strong>${nameOf(eye)}</strong>'s eyes. Switch delivered it ${plural(list.filter((d) => d.sender !== eye).length, 'message')} from others (it said ${list.filter((d) => d.sender === eye).length} itself). ${plural(missed, 'message')} were said in rooms it is not in, and none of them reached it.</p>`
       : `<p>The GM's view: every room at once.</p>`;
     for (const key of roomKeys) {
       const r = data.rooms[key];
@@ -110,7 +110,7 @@
       const box = sec.querySelector('.msgs');
       if (!member) {
         const d = data.denied.find((x) => x.agent === eye && x.room === key);
-        box.innerHTML = `<p class="locknote">${nameOf(eye)} is not in this room, so Switch never sends it these messages.${d ? `<br><br>When it tried to read the room, Switch answered:<br><code>${escapeHtml(d.detail)}</code>` : ''}</p>`;
+        box.innerHTML = `<p class="locknote">${nameOf(eye)} is not in this room, so Switch never sends it these messages.${d ? `<br><br>At startup every NPC asks Switch for the rooms it is not in, as a check. For this one, Switch answered:<br><code>${escapeHtml(d.detail)}</code>` : ''}</p>`;
       } else {
         const msgs = list.slice(0, shown).filter((d) => d.room === key);
         if (!msgs.length) box.innerHTML = '<p class="empty">Nothing yet.</p>';
