@@ -27,7 +27,8 @@ check('unit tests (protocol client, NPC, Keeper, model adapters, recording)', ()
   // Spec reporter everywhere: without a TTY (CI) node picks TAP, which prints "# pass" instead.
   const r = run('node', ['--test', '--test-reporter=spec', 'test/unit/']);
   const n = (k) => Number((r.stdout.match(new RegExp(`(?:ℹ|#) ${k} (\\d+)`)) || [])[1] ?? NaN);
-  must(r.status === 0 && n('fail') === 0, `${n('fail')} failed`);
+  const failed = [...new Set(r.stdout.split('\n').filter((l) => /^\s*✖ /.test(l) && !/failing tests/.test(l)).map((l) => l.trim()))];
+  must(r.status === 0 && n('fail') === 0, `${n('fail')} failed: ${failed.join(' | ')}`);
   return `${n('pass')} of ${n('tests')} pass`;
 });
 
