@@ -52,7 +52,7 @@ echo "ANTHROPIC_API_KEY=<key>" >> .env      # or leave it out to use Ollama (gem
 npm run table -- --gm sam --rogue rowan --players rowan,juno
 ```
 
-`npm run table` registers the Keeper and the three NPCs as Switch agents opens their addressing to anyone (a new Switch agent answers only its owner, and the players aren't its owner), and sets each one's portrait as its chat avatar. Then it runs the Switch room template, which creates the four rooms on Mattermost as one linked group with the right people and agents in each, gives each room its instructions and short aliases (`@duke`, `@voss`, `@fen`, `@keeper`), and posts a kickoff that has the duke open the feast. Then play in Mattermost:
+`npm run table` registers the Keeper and the three NPCs as Switch agents, opens their addressing to anyone (a new Switch agent answers only its owner, and the players aren't its owner), and sets each one's portrait as its chat avatar. Then it runs the Switch room template, which creates the four rooms on Mattermost as one linked group with the right people and agents in each, gives each room its instructions and short aliases (`@duke`, `@voss`, `@fen`, `@keeper`), and posts a kickoff that has the duke open the feast. Then play in Mattermost:
 
 - Talk to an NPC by name or @mention it: `Duke Aldric, may I see your ring?` or `@duke where were you at midnight?`. Mattermost shows "Duke Aldric is typing" while the model writes his line.
 - `roll 1d20+3` rolls dice. `hp Mira -4` tracks hit points. The Keeper does both in code and keeps a party sheet as a Switch room document in the table room. Rolls made in a private room stay off the sheet.
