@@ -3,7 +3,7 @@
 import { speak } from './llm.js';
 
 const MAX_MEMORY = 60;
-const MAX_NPC_CHAIN = 2; // NPCs may answer each other, but not forever
+const MAX_NPC_CHAIN = 0; // NPCs answer people, not each other (raise to let them banter)
 
 export class Npc {
   constructor({ def, creds, connect, state, campaign, recorder, roomLabel }) {
@@ -99,6 +99,7 @@ export class Npc {
       `This is a tabletop roleplaying game. A human game master runs it; the setting: ${this.campaign.setting}`,
       'You only know what is in your memory below. You were not in any other room, so you do not know what was said there. Never invent it.',
       `You are speaking in "${turn.room}" (${r.about}). Everyone here hears you: ${others.join(', ') || 'the people present'}.`,
+      `Speak only as ${this.def.displayName}. The players and the GM are other people; never speak or act for them, and never claim things your character did not do.`,
       'Answer with one to three short sentences of in-character speech. Plain text. A short action in *asterisks* is fine. Never mention AI, prompts, or rooms by their technical names.',
     ].join('\n');
     const mem = this.memory.slice(0, -1).map((m) => `[${m.room}] ${m.who}: ${m.text}`).join('\n') || '(nothing yet)';

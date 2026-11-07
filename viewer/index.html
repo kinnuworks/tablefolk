@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tablefolk</title>
+<meta name="description" content="Replay of a real Tablefolk session on Switch. Watch the table through any NPC's eyes.">
+<style>
+  :root { --bg: #fff; --fg: #1b1b1b; --muted: #6b6b6b; --line: #e3e3e3; --card: #f7f7f7; --accent: #1a5fd0; --lock: #f1f1f1; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #141414; --fg: #ececec; --muted: #9a9a9a; --line: #2c2c2c; --card: #1d1d1d; --accent: #7aa7ff; --lock: #1a1a1a; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.45 system-ui, -apple-system, Segoe UI, sans-serif; }
+  header { padding: 20px 16px 8px; max-width: 1280px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .lede { margin: 0; color: var(--muted); max-width: 760px; }
+  .bar { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .bar-inner { max-width: 1280px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .label { color: var(--muted); font-size: 13px; margin-right: 4px; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .spacer { flex: 1; }
+  .summary { max-width: 1280px; margin: 0 auto; padding: 10px 16px 0; min-height: 30px; }
+  .summary p { margin: 0; }
+  main { max-width: 1280px; margin: 0 auto; padding: 12px 16px 40px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .room { border: 1px solid var(--line); border-radius: 10px; background: var(--card); display: flex; flex-direction: column; min-height: 220px; max-height: 70vh; }
+  .room h2 { font-size: 14px; margin: 0; padding: 10px 12px 2px; }
+  .room .about { font-size: 12px; color: var(--muted); padding: 0 12px 8px; border-bottom: 1px solid var(--line); }
+  .msgs { overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .msg .who { font-size: 12px; font-weight: 600; }
+  .msg .who .tag { font-weight: 400; color: var(--muted); }
+  .msg .body { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .msg.npc .who { color: var(--accent); }
+  .room.locked { background: var(--lock); }
+  .room.locked .msgs { color: var(--muted); }
+  .locknote { font-size: 13px; }
+  .locknote code { font-size: 12px; overflow-wrap: anywhere; }
+  .empty { color: var(--muted); font-size: 13px; }
+  footer { max-width: 1280px; margin: 0 auto; padding: 0 16px 32px; color: var(--muted); font-size: 13px; }
+  .error { padding: 16px; color: #b00020; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Tablefolk</h1>
+  <p class="lede">AI NPCs that keep secrets. Every NPC is its own agent on Switch and only hears the rooms it sits in. This is a replay of a recorded session. Pick an NPC to see exactly what it was told.</p>
+</header>
+<div class="bar"><div class="bar-inner">
+  <span class="label">Watch through</span>
+  <span id="eyes"></span>
+  <span class="spacer"></span>
+  <button id="play">Pause</button>
+  <button id="all">Show all</button>
+</div></div>
+<div class="summary" id="summary"></div>
+<main id="rooms"><p class="empty">Loading the session…</p></main>
+<footer id="foot"></footer>
+<script>
+(async () => {
+  let data;
+  try { data = await (await fetch('session.json')).json(); }
+  catch (e) { document.getElementById('rooms').innerHTML = '<p class="error">Couldn\'t load the session file. Reload to try again.</p>'; return; }
+
+  const npcByName = Object.fromEntries(data.npcs.map((n) => [n.name, n]));
+  const peopleByName = Object.fromEntries((data.people || []).map((p) => [p.name, p]));
+  const nameOf = (s) => s === 'table-keeper' ? 'Keeper' : npcByName[s]?.displayName || peopleByName[s]?.displayName || s;
+  const roomKeys = Object.keys(data.rooms);
+  const viewers = [{ id: 'table-keeper', label: 'Everyone (GM view)' }, ...data.npcs.map((n) => ({ id: n.name, label: n.displayName }))];
+  const params = new URLSearchParams(location.search);
+  let eye = viewers.some((v) => v.id === params.get('eye')) ? params.get('eye') : 'table-keeper';
+  let shown = 0, playing = true, timer = null;
+
+  // One message can be delivered to many agents. For a viewer, keep the copies that agent received.
+  const forEye = (id) => data.deliveries.filter((d) => d.agent === id);
+
+  const eyes = document.getElementById('eyes');
+  for (const v of viewers) {
+    const b = document.createElement('button');
+    b.textContent = v.label; b.dataset.id = v.id;
+    b.onclick = () => { eye = v.id; history.replaceState(null, '', v.id === 'table-keeper' ? location.pathname : `?eye=${v.id}`); render(true); };
+    eyes.appendChild(b);
+  }
+
+  function render(restart) {
+    for (const b of eyes.children) b.setAttribute('aria-pressed', String(b.dataset.id === eye));
+    const list = forEye(eye);
+    if (restart) shown = playing ? 0 : list.length;
+    const main = document.getElementById('rooms');
+    main.innerHTML = '';
+    const isNpc = eye !== 'table-keeper';
+    const missed = isNpc ? data.deliveries.filter((d) => d.agent === 'table-keeper' && !list.some((x) => x.room === d.room)).length : 0;
+    const summary = document.getElementById('summary');
+    summary.innerHTML = isNpc
+      ? `<p><strong>${nameOf(eye)}</strong> received ${list.length} messages. ${missed} messages were said in rooms it is not in, and none of them reached it.</p>`
+      : `<p>The GM's view: every room at once.</p>`;
+    for (const key of roomKeys) {
+      const r = data.rooms[key];
+      const member = !isNpc || (r.agents || []).includes(eye);
+      const sec = document.createElement('section');
+      sec.className = 'room' + (member ? '' : ' locked');
+      sec.innerHTML = `<h2>${member ? '' : '🔒 '}${r.title}</h2><div class="about">${r.about || ''}</div><div class="msgs"></div>`;
+      const box = sec.querySelector('.msgs');
+      if (!member) {
+        const d = data.denied.find((x) => x.agent === eye && x.room === key);
+        box.innerHTML = `<p class="locknote">${nameOf(eye)} is not in this room, so Switch never sends it these messages.${d ? `<br><br>When it tried to read the room, Switch answered:<br><code>${escapeHtml(d.detail)}</code>` : ''}</p>`;
+      } else {
+        const msgs = list.slice(0, shown).filter((d) => d.room === key);
+        if (!msgs.length) box.innerHTML = '<p class="empty">Nothing yet.</p>';
+        for (const m of msgs) {
+          const el = document.createElement('div');
+          el.className = 'msg' + (npcByName[m.sender] ? ' npc' : '');
+          const tag = npcByName[m.sender] ? ' <span class="tag">NPC agent</span>' : m.sender === 'table-keeper' ? ' <span class="tag">dice, in code</span>' : '';
+          el.innerHTML = `<div class="who">${escapeHtml(nameOf(m.sender))}${tag}</div><div class="body">${escapeHtml(m.body)}</div>`;
+          box.appendChild(el);
+        }
+        box.scrollTop = box.scrollHeight;
+      }
+      main.appendChild(sec);
+    }
+    document.getElementById('play').textContent = shown >= list.length ? 'Replay' : playing ? 'Pause' : 'Play';
+  }
+
+  function tick() {
+    const list = forEye(eye);
+    if (!playing || shown >= list.length) { render(false); return; }
+    shown++; render(false);
+    timer = setTimeout(tick, 1100);
+  }
+
+  document.getElementById('play').onclick = () => {
+    const list = forEye(eye);
+    if (shown >= list.length) { shown = 0; playing = true; }
+    else playing = !playing;
+    clearTimeout(timer); tick();
+  };
+  document.getElementById('all').onclick = () => { playing = false; clearTimeout(timer); shown = forEye(eye).length; render(false); };
+  const origRender = render;
+  render = (restart) => { clearTimeout(timer); origRender(restart); if (restart && playing) timer = setTimeout(tick, 600); };
+
+  document.getElementById('foot').textContent = (data.note ? data.note + ' ' : '') + `Recorded on a Switch server. Refusals recorded: ${data.denied.length}. Leaks: ${data.leaks}.`;
+  render(true);
+
+  function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+})();
+</script>
+</body>
+</html>

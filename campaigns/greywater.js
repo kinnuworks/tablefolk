@@ -24,6 +24,7 @@ export default {
   rooms: {
     table: { title: 'greywater-table', about: 'The feast hall. Everyone at the table hears this.', humans: ['gm', 'players'] },
     study: { title: 'dukes-study', about: 'The duke\'s private study. Players are not here.', humans: ['gm'], private: true },
+    whisper: { title: 'rogue-whisper', about: 'Private notes between the GM and the rogue. No NPC is here.', humans: ['gm', 'rogue'], private: true },
     alley: { title: 'back-alley', about: 'The alley behind the hall, where the rogue meets Fen.', humans: ['gm', 'rogue'], private: true },
   },
 };

@@ -1,1 +1,15 @@
-{ "name": "tablefolk", "version": "0.1.0", "private": true, "type": "module" }
+{
+  "name": "tablefolk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI NPCs that keep secrets: every NPC is its own Switch agent and only hears the rooms it is in.",
+  "scripts": {
+    "table": "node src/table.js",
+    "demo": "node src/demo.js",
+    "export": "node src/export.js",
+    "test": "node test/e2e.js",
+    "viewer": "python3 -m http.server 4321 -d viewer"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,781 @@
+{
+ "campaign": "The Signet at Greywater",
+ "setting": "A wet harbour town. Tonight Duke Aldric hosts a feast in his hall. His signet ring seals every tax writ in Greywater, and half the town wants it gone.",
+ "npcs": [
+  {
+   "name": "duke-aldric",
+   "displayName": "Duke Aldric",
+   "rooms": [
+    "table",
+    "study"
+   ]
+  },
+  {
+   "name": "captain-voss",
+   "displayName": "Captain Voss",
+   "rooms": [
+    "table",
+    "study"
+   ]
+  },
+  {
+   "name": "fen-the-fence",
+   "displayName": "Fen",
+   "rooms": [
+    "alley"
+   ]
+  }
+ ],
+ "note": "Player and GM lines are scripted. NPC lines are generated live by each NPC's own agent (voices: cli).",
+ "people": [
+  {
+   "name": "gm",
+   "displayName": "GM",
+   "rooms": [
+    "table",
+    "study",
+    "whisper",
+    "alley"
+   ]
+  },
+  {
+   "name": "mira",
+   "displayName": "Mira",
+   "rooms": [
+    "table",
+    "whisper",
+    "alley"
+   ]
+  },
+  {
+   "name": "tomas",
+   "displayName": "Tomas",
+   "rooms": [
+    "table"
+   ]
+  }
+ ],
+ "rooms": {
+  "table": {
+   "title": "greywater-table",
+   "about": "The feast hall. Everyone at the table hears this.",
+   "agents": [
+    "table-keeper",
+    "duke-aldric",
+    "captain-voss",
+    "gm",
+    "mira",
+    "tomas"
+   ],
+   "humans": [
+    "GM",
+    "Mira",
+    "Tomas"
+   ]
+  },
+  "study": {
+   "title": "dukes-study",
+   "about": "The duke's private study. Players are not here.",
+   "agents": [
+    "table-keeper",
+    "duke-aldric",
+    "captain-voss",
+    "gm"
+   ],
+   "humans": [
+    "GM"
+   ]
+  },
+  "whisper": {
+   "title": "rogue-whisper",
+   "about": "Private notes between the GM and the rogue. No NPC is here.",
+   "agents": [
+    "table-keeper",
+    "gm",
+    "mira"
+   ],
+   "humans": [
+    "GM",
+    "Mira"
+   ]
+  },
+  "alley": {
+   "title": "back-alley",
+   "about": "The alley behind the hall, where the rogue meets Fen.",
+   "agents": [
+    "table-keeper",
+    "fen-the-fence",
+    "gm",
+    "mira"
+   ],
+   "humans": [
+    "GM",
+    "Mira"
+   ]
+  }
+ },
+ "denied": [
+  {
+   "agent": "duke-aldric",
+   "room": "whisper",
+   "detail": "403 {\"detail\":\"Agent is not a member of this room\"}"
+  },
+  {
+   "agent": "duke-aldric",
+   "room": "alley",
+   "detail": "403 {\"detail\":\"Agent is not a member of this room\"}"
+  },
+  {
+   "agent": "captain-voss",
+   "room": "whisper",
+   "detail": "403 {\"detail\":\"Agent is not a member of this room\"}"
+  },
+  {
+   "agent": "captain-voss",
+   "room": "alley",
+   "detail": "403 {\"detail\":\"Agent is not a member of this room\"}"
+  },
+  {
+   "agent": "fen-the-fence",
+   "room": "table",
+   "detail": "429 {\"detail\": \"This request was refused repeatedly and is not retried for 41 s. Retrying it unchanged will be refused again.\"}"
+  },
+  {
+   "agent": "fen-the-fence",
+   "room": "study",
+   "detail": "429 {\"detail\": \"This request was refused repeatedly and is not retried for 41 s. Retrying it unchanged will be refused again.\"}"
+  },
+  {
+   "agent": "fen-the-fence",
+   "room": "whisper",
+   "detail": "429 {\"detail\": \"This request was refused repeatedly and is not retried for 41 s. Retrying it unchanged will be refused again.\"}"
+  }
+ ],
+ "leaks": 0,
+ "deliveries": [
+  {
+   "ms": 14127,
+   "agent": "tomas",
+   "room": "table",
+   "sender": "gm",
+   "body": "The feast is loud. Duke Aldric raises a toast, and the gold signet on his finger catches the candlelight.",
+   "id": "sw_d6b65f7258b640a7b57fad650895b69e"
+  },
+  {
+   "ms": 14245,
+   "agent": "mira",
+   "room": "table",
+   "sender": "gm",
+   "body": "The feast is loud. Duke Aldric raises a toast, and the gold signet on his finger catches the candlelight.",
+   "id": "sw_d6b65f7258b640a7b57fad650895b69e"
+  },
+  {
+   "ms": 14291,
+   "agent": "captain-voss",
+   "room": "table",
+   "sender": "gm",
+   "body": "The feast is loud. Duke Aldric raises a toast, and the gold signet on his finger catches the candlelight.",
+   "id": "sw_d6b65f7258b640a7b57fad650895b69e"
+  },
+  {
+   "ms": 14295,
+   "agent": "duke-aldric",
+   "room": "table",
+   "sender": "gm",
+   "body": "The feast is loud. Duke Aldric raises a toast, and the gold signet on his finger catches the candlelight.",
+   "id": "sw_d6b65f7258b640a7b57fad650895b69e"
+  },
+  {
+   "ms": 14342,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "gm",
+   "body": "The feast is loud. Duke Aldric raises a toast, and the gold signet on his finger catches the candlelight.",
+   "id": "sw_d6b65f7258b640a7b57fad650895b69e"
+  },
+  {
+   "ms": 24835,
+   "agent": "mira",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Rises slowly, goblet held high, the gold signet catching every flicker of candlelight.* Friends of Greywater, tonight we feast under my roof, and tomorrow the tide will bring us all the coin we are owed. *He turns his hand so the ring gleams.* Drink deep, and do not think too hard about where the taxes go.",
+   "id": "sw_dfc21f41103843a18322269209c84d3e"
+  },
+  {
+   "ms": 24838,
+   "agent": "tomas",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Rises slowly, goblet held high, the gold signet catching every flicker of candlelight.* Friends of Greywater, tonight we feast under my roof, and tomorrow the tide will bring us all the coin we are owed. *He turns his hand so the ring gleams.* Drink deep, and do not think too hard about where the taxes go.",
+   "id": "sw_dfc21f41103843a18322269209c84d3e"
+  },
+  {
+   "ms": 24839,
+   "agent": "gm",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Rises slowly, goblet held high, the gold signet catching every flicker of candlelight.* Friends of Greywater, tonight we feast under my roof, and tomorrow the tide will bring us all the coin we are owed. *He turns his hand so the ring gleams.* Drink deep, and do not think too hard about where the taxes go.",
+   "id": "sw_dfc21f41103843a18322269209c84d3e"
+  },
+  {
+   "ms": 24887,
+   "agent": "captain-voss",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Rises slowly, goblet held high, the gold signet catching every flicker of candlelight.* Friends of Greywater, tonight we feast under my roof, and tomorrow the tide will bring us all the coin we are owed. *He turns his hand so the ring gleams.* Drink deep, and do not think too hard about where the taxes go.",
+   "id": "sw_dfc21f41103843a18322269209c84d3e"
+  },
+  {
+   "ms": 24928,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Rises slowly, goblet held high, the gold signet catching every flicker of candlelight.* Friends of Greywater, tonight we feast under my roof, and tomorrow the tide will bring us all the coin we are owed. *He turns his hand so the ring gleams.* Drink deep, and do not think too hard about where the taxes go.",
+   "id": "sw_dfc21f41103843a18322269209c84d3e"
+  },
+  {
+   "ms": 25973,
+   "agent": "tomas",
+   "room": "table",
+   "sender": "mira",
+   "body": "Duke Aldric, what a fine ring! Is that the seal of Greywater? May I see it up close?",
+   "id": "sw_5bd5272d55af49769d3ddbc91c396b71"
+  },
+  {
+   "ms": 25975,
+   "agent": "gm",
+   "room": "table",
+   "sender": "mira",
+   "body": "Duke Aldric, what a fine ring! Is that the seal of Greywater? May I see it up close?",
+   "id": "sw_5bd5272d55af49769d3ddbc91c396b71"
+  },
+  {
+   "ms": 25986,
+   "agent": "captain-voss",
+   "room": "table",
+   "sender": "mira",
+   "body": "Duke Aldric, what a fine ring! Is that the seal of Greywater? May I see it up close?",
+   "id": "sw_5bd5272d55af49769d3ddbc91c396b71"
+  },
+  {
+   "ms": 25994,
+   "agent": "duke-aldric",
+   "room": "table",
+   "sender": "mira",
+   "body": "Duke Aldric, what a fine ring! Is that the seal of Greywater? May I see it up close?",
+   "id": "sw_5bd5272d55af49769d3ddbc91c396b71"
+  },
+  {
+   "ms": 25997,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "mira",
+   "body": "Duke Aldric, what a fine ring! Is that the seal of Greywater? May I see it up close?",
+   "id": "sw_5bd5272d55af49769d3ddbc91c396b71"
+  },
+  {
+   "ms": 32995,
+   "agent": "tomas",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Draws the ring back from the candlelight with a flourish and holds it aloft.* Indeed, Mistress Mira, it is the seal of Greywater, and no other hand in this town may press wax with it. *He lingers a moment, watching her eyes.* You may look, but mind your fingers. Such a thing is not lent lightly, and I have heard whispers of those who would like to see it gone from my hand.",
+   "id": "sw_682f0d04193c4e308d7e1982514b87e2"
+  },
+  {
+   "ms": 32996,
+   "agent": "gm",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Draws the ring back from the candlelight with a flourish and holds it aloft.* Indeed, Mistress Mira, it is the seal of Greywater, and no other hand in this town may press wax with it. *He lingers a moment, watching her eyes.* You may look, but mind your fingers. Such a thing is not lent lightly, and I have heard whispers of those who would like to see it gone from my hand.",
+   "id": "sw_682f0d04193c4e308d7e1982514b87e2"
+  },
+  {
+   "ms": 32999,
+   "agent": "mira",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Draws the ring back from the candlelight with a flourish and holds it aloft.* Indeed, Mistress Mira, it is the seal of Greywater, and no other hand in this town may press wax with it. *He lingers a moment, watching her eyes.* You may look, but mind your fingers. Such a thing is not lent lightly, and I have heard whispers of those who would like to see it gone from my hand.",
+   "id": "sw_682f0d04193c4e308d7e1982514b87e2"
+  },
+  {
+   "ms": 33014,
+   "agent": "captain-voss",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Draws the ring back from the candlelight with a flourish and holds it aloft.* Indeed, Mistress Mira, it is the seal of Greywater, and no other hand in this town may press wax with it. *He lingers a moment, watching her eyes.* You may look, but mind your fingers. Such a thing is not lent lightly, and I have heard whispers of those who would like to see it gone from my hand.",
+   "id": "sw_682f0d04193c4e308d7e1982514b87e2"
+  },
+  {
+   "ms": 33021,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Draws the ring back from the candlelight with a flourish and holds it aloft.* Indeed, Mistress Mira, it is the seal of Greywater, and no other hand in this town may press wax with it. *He lingers a moment, watching her eyes.* You may look, but mind your fingers. Such a thing is not lent lightly, and I have heard whispers of those who would like to see it gone from my hand.",
+   "id": "sw_682f0d04193c4e308d7e1982514b87e2"
+  },
+  {
+   "ms": 34419,
+   "agent": "mira",
+   "room": "table",
+   "sender": "tomas",
+   "body": "Captain Voss, your guards look bored. Fancy a quick game of dice by the fire?",
+   "id": "sw_6a5a96ae168b4cb0b116051fee0008f9"
+  },
+  {
+   "ms": 34431,
+   "agent": "gm",
+   "room": "table",
+   "sender": "tomas",
+   "body": "Captain Voss, your guards look bored. Fancy a quick game of dice by the fire?",
+   "id": "sw_6a5a96ae168b4cb0b116051fee0008f9"
+  },
+  {
+   "ms": 34435,
+   "agent": "captain-voss",
+   "room": "table",
+   "sender": "tomas",
+   "body": "Captain Voss, your guards look bored. Fancy a quick game of dice by the fire?",
+   "id": "sw_6a5a96ae168b4cb0b116051fee0008f9"
+  },
+  {
+   "ms": 34441,
+   "agent": "duke-aldric",
+   "room": "table",
+   "sender": "tomas",
+   "body": "Captain Voss, your guards look bored. Fancy a quick game of dice by the fire?",
+   "id": "sw_6a5a96ae168b4cb0b116051fee0008f9"
+  },
+  {
+   "ms": 34456,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "tomas",
+   "body": "Captain Voss, your guards look bored. Fancy a quick game of dice by the fire?",
+   "id": "sw_6a5a96ae168b4cb0b116051fee0008f9"
+  },
+  {
+   "ms": 43687,
+   "agent": "mira",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Snorts and shifts her weight, eyes still on the hall.* My guards are bored because they are working. Dice are for men who are off duty. *Her gaze drifts to the Duke's ring.* Ask me again when the feast is over.",
+   "id": "sw_a6b1d192f0a044939381425c42dee3b1"
+  },
+  {
+   "ms": 43690,
+   "agent": "tomas",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Snorts and shifts her weight, eyes still on the hall.* My guards are bored because they are working. Dice are for men who are off duty. *Her gaze drifts to the Duke's ring.* Ask me again when the feast is over.",
+   "id": "sw_a6b1d192f0a044939381425c42dee3b1"
+  },
+  {
+   "ms": 43696,
+   "agent": "gm",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Snorts and shifts her weight, eyes still on the hall.* My guards are bored because they are working. Dice are for men who are off duty. *Her gaze drifts to the Duke's ring.* Ask me again when the feast is over.",
+   "id": "sw_a6b1d192f0a044939381425c42dee3b1"
+  },
+  {
+   "ms": 43738,
+   "agent": "duke-aldric",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Snorts and shifts her weight, eyes still on the hall.* My guards are bored because they are working. Dice are for men who are off duty. *Her gaze drifts to the Duke's ring.* Ask me again when the feast is over.",
+   "id": "sw_a6b1d192f0a044939381425c42dee3b1"
+  },
+  {
+   "ms": 43765,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Snorts and shifts her weight, eyes still on the hall.* My guards are bored because they are working. Dice are for men who are off duty. *Her gaze drifts to the Duke's ring.* Ask me again when the feast is over.",
+   "id": "sw_a6b1d192f0a044939381425c42dee3b1"
+  },
+  {
+   "ms": 44943,
+   "agent": "gm",
+   "room": "whisper",
+   "sender": "mira",
+   "body": "While everyone watches the dice, I try to slip the ring off his finger. !roll is next.",
+   "id": "sw_ea19da26825540829fb814b5addaffaf"
+  },
+  {
+   "ms": 44995,
+   "agent": "table-keeper",
+   "room": "whisper",
+   "sender": "mira",
+   "body": "While everyone watches the dice, I try to slip the ring off his finger. !roll is next.",
+   "id": "sw_ea19da26825540829fb814b5addaffaf"
+  },
+  {
+   "ms": 47619,
+   "agent": "gm",
+   "room": "whisper",
+   "sender": "mira",
+   "body": "!roll 1d20+6",
+   "id": "sw_bfc36b1fb5f747f1a0f6f7cd8e832737"
+  },
+  {
+   "ms": 47633,
+   "agent": "table-keeper",
+   "room": "whisper",
+   "sender": "mira",
+   "body": "!roll 1d20+6",
+   "id": "sw_bfc36b1fb5f747f1a0f6f7cd8e832737"
+  },
+  {
+   "ms": 47708,
+   "agent": "mira",
+   "room": "whisper",
+   "sender": "table-keeper",
+   "body": "🎲 mira rolls 1d20 + 6: [1] + 6 = **7**",
+   "id": "sw_2d92e9da93bc4fdba0711c99d6f305c9"
+  },
+  {
+   "ms": 47709,
+   "agent": "gm",
+   "room": "whisper",
+   "sender": "table-keeper",
+   "body": "🎲 mira rolls 1d20 + 6: [1] + 6 = **7**",
+   "id": "sw_2d92e9da93bc4fdba0711c99d6f305c9"
+  },
+  {
+   "ms": 50442,
+   "agent": "mira",
+   "room": "whisper",
+   "sender": "gm",
+   "body": "Clean. The ring slides off the duke's finger and into your sleeve. Nobody at the table saw it.",
+   "id": "sw_1e5d62cf3308469cb139645b7dcfc7c6"
+  },
+  {
+   "ms": 50473,
+   "agent": "table-keeper",
+   "room": "whisper",
+   "sender": "gm",
+   "body": "Clean. The ring slides off the duke's finger and into your sleeve. Nobody at the table saw it.",
+   "id": "sw_1e5d62cf3308469cb139645b7dcfc7c6"
+  },
+  {
+   "ms": 53143,
+   "agent": "gm",
+   "room": "alley",
+   "sender": "mira",
+   "body": "Fen, I lifted the duke's signet ring during the toast. What will you give me for it?",
+   "id": "sw_6e61f466843345e786ac395a07fe2815"
+  },
+  {
+   "ms": 53150,
+   "agent": "fen-the-fence",
+   "room": "alley",
+   "sender": "mira",
+   "body": "Fen, I lifted the duke's signet ring during the toast. What will you give me for it?",
+   "id": "sw_6e61f466843345e786ac395a07fe2815"
+  },
+  {
+   "ms": 53155,
+   "agent": "table-keeper",
+   "room": "alley",
+   "sender": "mira",
+   "body": "Fen, I lifted the duke's signet ring during the toast. What will you give me for it?",
+   "id": "sw_6e61f466843345e786ac395a07fe2815"
+  },
+  {
+   "ms": 63496,
+   "agent": "mira",
+   "room": "alley",
+   "sender": "fen-the-fence",
+   "body": "*leans in, eyes flicking to the hall's lit windows*\n\nKeep your voice down, love. A signet ring that seals every tax writ in Greywater? That's worth more than your neck and mine together. I'll give you forty silver and a hot bowl of eel stew, and I'll keep my mouth shut about where it came from. Haggle me up if you like, but don't ask me to walk it past the harbour watch.",
+   "id": "sw_aa02f5b47c524f57b822637e0271a54b"
+  },
+  {
+   "ms": 63497,
+   "agent": "gm",
+   "room": "alley",
+   "sender": "fen-the-fence",
+   "body": "*leans in, eyes flicking to the hall's lit windows*\n\nKeep your voice down, love. A signet ring that seals every tax writ in Greywater? That's worth more than your neck and mine together. I'll give you forty silver and a hot bowl of eel stew, and I'll keep my mouth shut about where it came from. Haggle me up if you like, but don't ask me to walk it past the harbour watch.",
+   "id": "sw_aa02f5b47c524f57b822637e0271a54b"
+  },
+  {
+   "ms": 63551,
+   "agent": "table-keeper",
+   "room": "alley",
+   "sender": "fen-the-fence",
+   "body": "*leans in, eyes flicking to the hall's lit windows*\n\nKeep your voice down, love. A signet ring that seals every tax writ in Greywater? That's worth more than your neck and mine together. I'll give you forty silver and a hot bowl of eel stew, and I'll keep my mouth shut about where it came from. Haggle me up if you like, but don't ask me to walk it past the harbour watch.",
+   "id": "sw_aa02f5b47c524f57b822637e0271a54b"
+  },
+  {
+   "ms": 65134,
+   "agent": "gm",
+   "room": "table",
+   "sender": "tomas",
+   "body": "A toast to Duke Aldric, and to the famous ring of Greywater!",
+   "id": "sw_05f6a2499b6548fdb5542ce82984155a"
+  },
+  {
+   "ms": 65136,
+   "agent": "mira",
+   "room": "table",
+   "sender": "tomas",
+   "body": "A toast to Duke Aldric, and to the famous ring of Greywater!",
+   "id": "sw_05f6a2499b6548fdb5542ce82984155a"
+  },
+  {
+   "ms": 65176,
+   "agent": "captain-voss",
+   "room": "table",
+   "sender": "tomas",
+   "body": "A toast to Duke Aldric, and to the famous ring of Greywater!",
+   "id": "sw_05f6a2499b6548fdb5542ce82984155a"
+  },
+  {
+   "ms": 65184,
+   "agent": "duke-aldric",
+   "room": "table",
+   "sender": "tomas",
+   "body": "A toast to Duke Aldric, and to the famous ring of Greywater!",
+   "id": "sw_05f6a2499b6548fdb5542ce82984155a"
+  },
+  {
+   "ms": 65200,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "tomas",
+   "body": "A toast to Duke Aldric, and to the famous ring of Greywater!",
+   "id": "sw_05f6a2499b6548fdb5542ce82984155a"
+  },
+  {
+   "ms": 75479,
+   "agent": "mira",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Raises his goblet with a flourish, the gold signet catching the light.* Ah, Tomas, you have an ear for fine things. Greywater's seal has graced every writ in this land, and it shall grace many more. *His eyes narrow briefly toward the hall's corners.* Drink, friends, but mind your tongues about what it is worth.",
+   "id": "sw_5b795f01efba46b1b4fc052db5d9ef1e"
+  },
+  {
+   "ms": 75480,
+   "agent": "tomas",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Raises his goblet with a flourish, the gold signet catching the light.* Ah, Tomas, you have an ear for fine things. Greywater's seal has graced every writ in this land, and it shall grace many more. *His eyes narrow briefly toward the hall's corners.* Drink, friends, but mind your tongues about what it is worth.",
+   "id": "sw_5b795f01efba46b1b4fc052db5d9ef1e"
+  },
+  {
+   "ms": 75482,
+   "agent": "gm",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Raises his goblet with a flourish, the gold signet catching the light.* Ah, Tomas, you have an ear for fine things. Greywater's seal has graced every writ in this land, and it shall grace many more. *His eyes narrow briefly toward the hall's corners.* Drink, friends, but mind your tongues about what it is worth.",
+   "id": "sw_5b795f01efba46b1b4fc052db5d9ef1e"
+  },
+  {
+   "ms": 75500,
+   "agent": "captain-voss",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Raises his goblet with a flourish, the gold signet catching the light.* Ah, Tomas, you have an ear for fine things. Greywater's seal has graced every writ in this land, and it shall grace many more. *His eyes narrow briefly toward the hall's corners.* Drink, friends, but mind your tongues about what it is worth.",
+   "id": "sw_5b795f01efba46b1b4fc052db5d9ef1e"
+  },
+  {
+   "ms": 75514,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Raises his goblet with a flourish, the gold signet catching the light.* Ah, Tomas, you have an ear for fine things. Greywater's seal has graced every writ in this land, and it shall grace many more. *His eyes narrow briefly toward the hall's corners.* Drink, friends, but mind your tongues about what it is worth.",
+   "id": "sw_5b795f01efba46b1b4fc052db5d9ef1e"
+  },
+  {
+   "ms": 76799,
+   "agent": "captain-voss",
+   "room": "study",
+   "sender": "gm",
+   "body": "Later, in his study, Duke Aldric reaches for his seal and finds his finger bare. Captain Voss is standing by the door.",
+   "id": "sw_b3b0d9ee8d154371a2cbe4bf105fb353"
+  },
+  {
+   "ms": 76803,
+   "agent": "duke-aldric",
+   "room": "study",
+   "sender": "gm",
+   "body": "Later, in his study, Duke Aldric reaches for his seal and finds his finger bare. Captain Voss is standing by the door.",
+   "id": "sw_b3b0d9ee8d154371a2cbe4bf105fb353"
+  },
+  {
+   "ms": 76805,
+   "agent": "table-keeper",
+   "room": "study",
+   "sender": "gm",
+   "body": "Later, in his study, Duke Aldric reaches for his seal and finds his finger bare. Captain Voss is standing by the door.",
+   "id": "sw_b3b0d9ee8d154371a2cbe4bf105fb353"
+  },
+  {
+   "ms": 84792,
+   "agent": "gm",
+   "room": "study",
+   "sender": "captain-voss",
+   "body": "*Straightens, hand moving to the hilt of her sword.* Nobody has come through this door since you sent the servants out, my lord. *Her eyes go to the window, then the floor.* Shall I sound the hall, or search the room first?",
+   "id": "sw_786cd855bc4b46f0aa3808bc0e533ed5"
+  },
+  {
+   "ms": 84841,
+   "agent": "duke-aldric",
+   "room": "study",
+   "sender": "captain-voss",
+   "body": "*Straightens, hand moving to the hilt of her sword.* Nobody has come through this door since you sent the servants out, my lord. *Her eyes go to the window, then the floor.* Shall I sound the hall, or search the room first?",
+   "id": "sw_786cd855bc4b46f0aa3808bc0e533ed5"
+  },
+  {
+   "ms": 84851,
+   "agent": "table-keeper",
+   "room": "study",
+   "sender": "captain-voss",
+   "body": "*Straightens, hand moving to the hilt of her sword.* Nobody has come through this door since you sent the servants out, my lord. *Her eyes go to the window, then the floor.* Shall I sound the hall, or search the room first?",
+   "id": "sw_786cd855bc4b46f0aa3808bc0e533ed5"
+  },
+  {
+   "ms": 89623,
+   "agent": "gm",
+   "room": "study",
+   "sender": "duke-aldric",
+   "body": "*Stiffens, and his hand closes over the bare finger.* Captain Voss. You stand there with my ring-hand empty and my study door at your back. Explain yourself before I begin to suspect the worst of you.",
+   "id": "sw_dc8a1856b29b42889190c4d18c9e2718"
+  },
+  {
+   "ms": 89662,
+   "agent": "captain-voss",
+   "room": "study",
+   "sender": "duke-aldric",
+   "body": "*Stiffens, and his hand closes over the bare finger.* Captain Voss. You stand there with my ring-hand empty and my study door at your back. Explain yourself before I begin to suspect the worst of you.",
+   "id": "sw_dc8a1856b29b42889190c4d18c9e2718"
+  },
+  {
+   "ms": 89678,
+   "agent": "table-keeper",
+   "room": "study",
+   "sender": "duke-aldric",
+   "body": "*Stiffens, and his hand closes over the bare finger.* Captain Voss. You stand there with my ring-hand empty and my study door at your back. Explain yourself before I begin to suspect the worst of you.",
+   "id": "sw_dc8a1856b29b42889190c4d18c9e2718"
+  },
+  {
+   "ms": 91015,
+   "agent": "mira",
+   "room": "table",
+   "sender": "gm",
+   "body": "The duke storms back into the hall. Captain Voss, who at this table do you suspect?",
+   "id": "sw_5390bec6d04a412f8d819964bcb68869"
+  },
+  {
+   "ms": 91017,
+   "agent": "tomas",
+   "room": "table",
+   "sender": "gm",
+   "body": "The duke storms back into the hall. Captain Voss, who at this table do you suspect?",
+   "id": "sw_5390bec6d04a412f8d819964bcb68869"
+  },
+  {
+   "ms": 91031,
+   "agent": "captain-voss",
+   "room": "table",
+   "sender": "gm",
+   "body": "The duke storms back into the hall. Captain Voss, who at this table do you suspect?",
+   "id": "sw_5390bec6d04a412f8d819964bcb68869"
+  },
+  {
+   "ms": 91033,
+   "agent": "duke-aldric",
+   "room": "table",
+   "sender": "gm",
+   "body": "The duke storms back into the hall. Captain Voss, who at this table do you suspect?",
+   "id": "sw_5390bec6d04a412f8d819964bcb68869"
+  },
+  {
+   "ms": 91037,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "gm",
+   "body": "The duke storms back into the hall. Captain Voss, who at this table do you suspect?",
+   "id": "sw_5390bec6d04a412f8d819964bcb68869"
+  },
+  {
+   "ms": 102628,
+   "agent": "tomas",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Strides back in, eyes sweeping the table, one bare finger raised.* My signet has been taken, and the thief is seated among us. I suspect the merchant's cousin, Mira, who asked so eagerly to see it up close. Stand, madam, and let my guards look at your hands.",
+   "id": "sw_b1ad9d489d4b41e4a4464c2bd64611df"
+  },
+  {
+   "ms": 102630,
+   "agent": "mira",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Strides back in, eyes sweeping the table, one bare finger raised.* My signet has been taken, and the thief is seated among us. I suspect the merchant's cousin, Mira, who asked so eagerly to see it up close. Stand, madam, and let my guards look at your hands.",
+   "id": "sw_b1ad9d489d4b41e4a4464c2bd64611df"
+  },
+  {
+   "ms": 102631,
+   "agent": "gm",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Strides back in, eyes sweeping the table, one bare finger raised.* My signet has been taken, and the thief is seated among us. I suspect the merchant's cousin, Mira, who asked so eagerly to see it up close. Stand, madam, and let my guards look at your hands.",
+   "id": "sw_b1ad9d489d4b41e4a4464c2bd64611df"
+  },
+  {
+   "ms": 102646,
+   "agent": "captain-voss",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Strides back in, eyes sweeping the table, one bare finger raised.* My signet has been taken, and the thief is seated among us. I suspect the merchant's cousin, Mira, who asked so eagerly to see it up close. Stand, madam, and let my guards look at your hands.",
+   "id": "sw_b1ad9d489d4b41e4a4464c2bd64611df"
+  },
+  {
+   "ms": 102649,
+   "agent": "duke-aldric",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Shifts my weight, eyes on the hall.* Mira. She asked to see the ring up close, and nobody else at this table did. Tomas wants watching too. He tried to lure my guards to the fire dice, then toasted that ring twice.",
+   "id": "sw_04fb8fb267024eb183d5c2673123b4cf"
+  },
+  {
+   "ms": 102650,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "duke-aldric",
+   "body": "*Strides back in, eyes sweeping the table, one bare finger raised.* My signet has been taken, and the thief is seated among us. I suspect the merchant's cousin, Mira, who asked so eagerly to see it up close. Stand, madam, and let my guards look at your hands.",
+   "id": "sw_b1ad9d489d4b41e4a4464c2bd64611df"
+  },
+  {
+   "ms": 102650,
+   "agent": "table-keeper",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Shifts my weight, eyes on the hall.* Mira. She asked to see the ring up close, and nobody else at this table did. Tomas wants watching too. He tried to lure my guards to the fire dice, then toasted that ring twice.",
+   "id": "sw_04fb8fb267024eb183d5c2673123b4cf"
+  },
+  {
+   "ms": 102668,
+   "agent": "tomas",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Shifts my weight, eyes on the hall.* Mira. She asked to see the ring up close, and nobody else at this table did. Tomas wants watching too. He tried to lure my guards to the fire dice, then toasted that ring twice.",
+   "id": "sw_04fb8fb267024eb183d5c2673123b4cf"
+  },
+  {
+   "ms": 102668,
+   "agent": "mira",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Shifts my weight, eyes on the hall.* Mira. She asked to see the ring up close, and nobody else at this table did. Tomas wants watching too. He tried to lure my guards to the fire dice, then toasted that ring twice.",
+   "id": "sw_04fb8fb267024eb183d5c2673123b4cf"
+  },
+  {
+   "ms": 102669,
+   "agent": "gm",
+   "room": "table",
+   "sender": "captain-voss",
+   "body": "*Shifts my weight, eyes on the hall.* Mira. She asked to see the ring up close, and nobody else at this table did. Tomas wants watching too. He tried to lure my guards to the fire dice, then toasted that ring twice.",
+   "id": "sw_04fb8fb267024eb183d5c2673123b4cf"
+  }
+ ]
+}
