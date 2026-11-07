@@ -25,7 +25,7 @@ const script = [
   ['mira', 'table', 'Duke Aldric, what a fine ring! Is that the seal of Greywater? May I see it up close?'],
   ['tomas', 'table', 'Captain Voss, your guards look bored. Fancy a quick game of dice by the fire?'],
   ['mira', 'whisper', 'While everyone watches the dice, I try to slip the ring off his finger.'],
-  ['mira', 'whisper', '!roll 1d20+6'],
+  ['mira', 'whisper', 'roll 1d20+6'],
   ['gm', 'whisper', 'Clean. The ring slides off the duke\'s finger and into your sleeve. Nobody at the table saw it.'],
   ['mira', 'alley', "Fen, I lifted the duke's signet ring during the toast. What will you give me for it?"],
   ['tomas', 'table', 'A toast to Duke Aldric, and to the famous ring of Greywater!'],

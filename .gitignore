@@ -3,3 +3,4 @@ node_modules/
 .agents.json
 .table-*.json
 sessions/
+.mm-test-users

@@ -1,6 +1,8 @@
+import { isJoinGreeting } from './npc.js';
 // The Keeper is a Switch agent with no model. Dice, hit points and side rooms
 // are rules, so they live in code where they are always right.
-const DICE = /^!roll\s+(\d*)d(\d+)\s*([+-]\s*\d+)?/i;
+// Plain words, not !commands: Switch keeps the ! prefix for its own commands.
+const DICE = /^roll\s+(\d*)d(\d+)\s*([+-]\s*\d+)?/i;
 
 export function roll(expr, rand = Math.random) {
   const m = expr.match(DICE);
@@ -34,19 +36,18 @@ export class Keeper {
 
   async hear(frame) {
     const p = frame.payload || {};
-    if (!p.body) return;
+    if (!p.body || isJoinGreeting(p)) return;
     this.recorder.delivery('table-keeper', this.roomLabel(frame.room_id), p, frame.sequence);
     const body = p.body.trim();
     const who = p.sender_name || 'Someone';
     try {
-      if (/^!roll/i.test(body)) {
+      if (DICE.test(body)) {
         const r = roll(body);
-        if (!r) return this.say(frame.room_id, 'Try !roll 1d20+3');
-        const mod = r.mod ? ` ${r.mod > 0 ? '+' : '-'} ${Math.abs(r.mod)}` : '';
+                const mod = r.mod ? ` ${r.mod > 0 ? '+' : '-'} ${Math.abs(r.mod)}` : '';
         return this.say(frame.room_id, `🎲 ${who} rolls ${r.n}d${r.sides}${mod}: [${r.rolls.join(', ')}]${mod} = **${r.total}**`);
       }
-      if (/^!hp/i.test(body)) return this.say(frame.room_id, this.hpCommand(body));
-      if (/^!aside/i.test(body)) return this.aside(frame, body, who);
+      if (/^hp(\s|$)/i.test(body)) return this.say(frame.room_id, this.hpCommand(body));
+      if (/^aside\s/i.test(body)) return this.aside(frame, body, who);
     } catch (e) {
       console.error(`[keeper] ${e.message}`);
       this.say(frame.room_id, `That didn't work: ${e.message.slice(0, 120)}`).catch(() => {});
@@ -54,7 +55,7 @@ export class Keeper {
   }
 
   hpCommand(body) {
-    const m = body.match(/^!hp\s+(\S+)\s+([+-]?\d+)/i);
+    const m = body.match(/^hp\s+(\S+)\s+([+-]?\d+)/i);
     if (m) {
       const [, name, delta] = m;
       const was = this.hp[name] ?? 20;
@@ -62,15 +63,15 @@ export class Keeper {
       return `❤️ ${name}: ${was} → **${this.hp[name]}**${this.hp[name] === 0 ? ' (down!)' : ''}`;
     }
     const rows = Object.entries(this.hp);
-    return rows.length ? '❤️ ' + rows.map(([k, v]) => `${k} ${v}`).join(' · ') : '❤️ Nobody has taken damage yet. Use !hp Mira -4';
+    return rows.length ? '❤️ ' + rows.map(([k, v]) => `${k} ${v}`).join(' · ') : '❤️ Nobody has taken damage yet. Use: hp Mira -4';
   }
 
-  // !aside fen @mira  -> a new private room with the GM, Mira and Fen, opened by Switch on the spot.
+  // aside fen @mira  -> a new private room with the GM, Mira and Fen, opened by Switch on the spot.
   async aside(frame, body, who) {
     const parts = body.split(/\s+/).slice(1);
     const npcWord = (parts.find((w) => !w.startsWith('@')) || '').toLowerCase();
     const npc = this.npcs.find((n) => n.def.call.includes(npcWord) || n.def.name === npcWord);
-    if (!npc) return this.say(frame.room_id, `Who should step aside? Try: !aside ${this.campaign.npcs[0].call[0]} @player`);
+    if (!npc) return this.say(frame.room_id, `Who should step aside? Try: aside ${this.campaign.npcs[0].call[0]} @player`);
     const users = parts.filter((w) => w.startsWith('@')).map((w) => w.slice(1));
     const gm = this.state.rooms.table.humans[0];
     const humans = [...new Set([gm, ...users].filter(Boolean))];

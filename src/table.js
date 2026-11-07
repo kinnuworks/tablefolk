@@ -49,6 +49,7 @@ if (!state) {
     console.log(`room ${made.name}: agents ${agents.join(', ')}; people ${humans.join(', ') || '(none)'}`);
   }
   fs.writeFileSync(STATE, JSON.stringify(state, null, 2));
+  state.fresh = true;
 }
 control.stop();
 
@@ -61,6 +62,7 @@ const npcs = campaign.npcs.map((def) => new Npc({ def, creds: npcCreds[def.name]
 keeper.npcs = npcs;
 await keeper.start();
 for (const npc of npcs) await npc.start();
+if (state.fresh) await keeper.say(state.rooms.table.id, `🕯️ ${campaign.title}. ${campaign.setting}\nName a character to talk to them. Dice: roll 1d20+3 · Hit points: hp Mira -4 · A private word: aside fen @you`);
 console.log(`\nTable is live (${campaign.title}). NPC voices: ${provider}. Recording to ${recorder.file}`);
-console.log('Talk in the rooms. Name an NPC to get a reply. !roll 1d20+3, !hp Mira -4, !aside fen @mira');
+console.log('Talk in the rooms. Name an NPC to get a reply. roll 1d20+3 · hp Mira -4 · aside fen @rowan');
 process.on('SIGINT', () => { recorder.close(); process.exit(0); });

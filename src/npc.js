@@ -3,6 +3,10 @@
 import { speak } from './llm.js';
 
 const MAX_MEMORY = 60;
+
+// Switch greets a room on an agent's behalf when it joins ("Tag @duke-aldric if you need me").
+// It is not something the character said, so it stays out of memory and recordings.
+export const isJoinGreeting = (p) => !!p.sender_name && p.body.length < 120 && p.body.includes(`@${p.sender_name}`);
 const MAX_NPC_CHAIN = 0; // NPCs answer people, not each other (raise to let them banter)
 
 export class Npc {
@@ -57,7 +61,7 @@ export class Npc {
 
   hear(frame) {
     const p = frame.payload || {};
-    if (!p.body) return;
+    if (!p.body || isJoinGreeting(p)) return;
     const room = this.roomLabel(frame.room_id);
     this.recorder.delivery(this.def.name, room, p, frame.sequence);
     this.memory.push({ room, who: this.displayOf(p.sender_name), text: p.body });
@@ -66,6 +70,7 @@ export class Npc {
 
     const fromNpc = this.npcNames.includes(p.sender_name);
     if (p.sender_name === 'Keeper' || p.sender_name === 'table-keeper') return;
+    if (/^(roll\s+\d*d\d|hp(\s|$)|aside\s)/i.test(p.body.trim())) return; // Keeper commands
     const text = p.body.toLowerCase();
     const named = this.def.call.some((c) => new RegExp(`(^|[^a-z])${c}([^a-z]|$)`).test(text)) || text.includes(`@${this.def.name}`);
     if (!named) return;

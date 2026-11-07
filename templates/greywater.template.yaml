@@ -1,0 +1,72 @@
+# Tablefolk: "The Signet at Greywater" as a Switch room template.
+# Creates the table and its private rooms as one linked group. The NPC agents
+# must exist first (npm run table registers them), because each one is a
+# custom agent with its own key and its own connection.
+version: 2
+params:
+  gm:
+    type: user
+    label: Game master
+    description: The person running the game, as their chat username. Sits in every room.
+    required: true
+  rogue:
+    type: user
+    label: The rogue
+    description: The player who will try to steal the ring, as their chat username. Gets a private whisper room with the GM.
+    required: true
+  player2:
+    type: string
+    label: Second player (username, optional)
+    default: ""
+  player3:
+    type: string
+    label: Third player (username, optional)
+    default: ""
+  tag:
+    type: string
+    label: Table name
+    description: Added to every room name so tables don't collide.
+    default: "{$date}"
+resources:
+  greywater:
+    type: group
+    name: "Greywater {tag}"
+    description: "One table for The Signet at Greywater. Each NPC sits only in the rooms it is listed in."
+    links:
+      - {from: table, to: study, label: "the duke withdraws"}
+      - {from: table, to: whisper, label: "the rogue whispers to the GM"}
+      - {from: table, to: alley, label: "out the back door"}
+  table:
+    type: room
+    group: greywater
+    name: "greywater-table-{tag}"
+    description: "The feast hall. Everyone at the table hears this."
+    instructions: "Name an NPC to have it answer. roll 1d20+3 rolls dice. hp Mira -4 tracks hit points. aside fen @player opens a private room with that NPC."
+    channel_type: channel_public
+    agents: [table-keeper, duke-aldric, captain-voss]
+    users: ["{gm}", "{rogue}", "{player2}", "{player3}"]
+    kickoff: "The feast in Duke Aldric's hall has begun. Players, introduce your characters. GM, set the scene."
+  study:
+    type: room
+    group: greywater
+    name: "dukes-study-{tag}"
+    description: "The duke's private study. Players are not here."
+    channel_type: channel_private
+    agents: [table-keeper, duke-aldric, captain-voss]
+    users: ["{gm}"]
+  whisper:
+    type: room
+    group: greywater
+    name: "rogue-whisper-{tag}"
+    description: "Private notes between the GM and the rogue. No NPC is here."
+    channel_type: channel_private
+    agents: [table-keeper]
+    users: ["{gm}", "{rogue}"]
+  alley:
+    type: room
+    group: greywater
+    name: "back-alley-{tag}"
+    description: "The alley behind the hall, where the rogue meets Fen."
+    channel_type: channel_private
+    agents: [table-keeper, fen-the-fence]
+    users: ["{gm}", "{rogue}"]

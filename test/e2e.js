@@ -55,7 +55,7 @@ check('fen is refused the table and the study', () => assert.equal(sink.events.f
 check('no NPC could read a room it is not in', () => assert.ok(!sink.events.some((e) => e.kind === 'leak')));
 
 // 2. Dice are code.
-await say('table', '!roll 2d6+3');
+await say('table', 'roll 2d6+3');
 const dice = await until(() => heard.find((h) => h.who === 'table-keeper' && h.body.includes('2d6')), 15000, 'dice');
 check('dice roll lands in the room', () => assert.match(dice.body, /= \*\*\d+\*\*/));
 
