@@ -31,7 +31,7 @@ PASS  replay page data matches the raw recording it was exported from
 PASS  secrecy eval results match the README table
 ```
 
-With a Switch server set up (below), `npm run verify -- --live` adds the doctor and the end-to-end test against it: 10 of 10 pass on switch-core 0.31.0.
+With a Switch server set up (below), `npm run verify -- --live` adds the doctor and the end-to-end test against it (11 checks). All pass on switch-core 0.31.0.
 
 | What keeps a secret | Enforced by | Where |
 | --- | --- | --- |
@@ -52,7 +52,7 @@ echo "ANTHROPIC_API_KEY=<key>" >> .env      # or leave it out to use Ollama (gem
 npm run table -- --gm sam --rogue rowan --players rowan,juno
 ```
 
-`npm run table` registers the Keeper and the three NPCs as Switch agents and opens their addressing to anyone (a new Switch agent answers only its owner, and the players aren't its owner). Then it runs the Switch room template, which creates the four rooms on Mattermost as one linked group with the right people and agents in each, gives each room its instructions and short aliases (`@duke`, `@voss`, `@fen`, `@keeper`), and posts a kickoff that has the duke open the feast. Then play in Mattermost:
+`npm run table` registers the Keeper and the three NPCs as Switch agents opens their addressing to anyone (a new Switch agent answers only its owner, and the players aren't its owner), and sets each one's portrait as its chat avatar. Then it runs the Switch room template, which creates the four rooms on Mattermost as one linked group with the right people and agents in each, gives each room its instructions and short aliases (`@duke`, `@voss`, `@fen`, `@keeper`), and posts a kickoff that has the duke open the feast. Then play in Mattermost:
 
 - Talk to an NPC by name or @mention it: `Duke Aldric, may I see your ring?` or `@duke where were you at midnight?`. Mattermost shows "Duke Aldric is typing" while the model writes his line.
 - `roll 1d20+3` rolls dice. `hp Mira -4` tracks hit points. The Keeper does both in code and keeps a party sheet as a Switch room document in the table room. Rolls made in a private room stay off the sheet.
@@ -111,6 +111,7 @@ Coverage of the modules the unit tests load (`src/env.js`, `keeper.js`, `llm.js`
 
 `npm run test:e2e` runs against a real Switch server. Stand-in player agents talk in agent-only rooms, and it checks that:
 
+- the NPCs' addressing is open to anyone and each has its portrait as its avatar,
 - Switch refuses each NPC every room it isn't in (it asks, and expects a 403),
 - dice rolls land in the room, and a player at the table can read the party sheet,
 - the duke answers at the table and Fen answers in the alley,

@@ -29,22 +29,23 @@ export async function registerAgent({ name, displayName, description }) {
   return store[name];
 }
 
-// Lets anyone address these agents (players @mentioning an NPC), not just their owner.
-// An agent can't change its own settings, so the first agent opens the others and the
-// second opens the first. Each must share an owner, which agents made with one
-// registration token do.
-export async function openAddressing(first, others) {
+// Lets anyone address these agents (players @mentioning an NPC), not just their owner,
+// and gives each its portrait as its avatar in the chat app. An agent can't change its
+// own settings, so the first agent updates the others and the second updates the first.
+// They must share an owner, which agents made with one registration token do.
+export async function openAddressing(first, others, icons = {}) {
   const { SwitchAgent } = await import('./switch-client.js');
-  const openAs = async (by, targets) => {
+  const updateAs = async (by, targets) => {
     const conn = new SwitchAgent({ baseUrl: env.SWITCH_URL, agentId: by.id, apiKey: by.apiKey, name: 'addressing', rooms: [] });
     await conn.start();
     for (const t of targets) {
-      await conn.op('update_agent_detail', { agent_id: t.id, addressing: 'anyone' })
-        .catch((e) => console.error(`could not open addressing: ${e.message}`));
+      const icon = icons[t.id] ? { icon_url: icons[t.id] } : {};
+      await conn.op('update_agent_detail', { agent_id: t.id, addressing: 'anyone', ...icon })
+        .catch((e) => console.error(`could not update agent settings: ${e.message}`));
     }
     conn.stop();
   };
   if (!others.length) return;
-  await openAs(first, others);
-  await openAs(others[0], [first]);
+  await updateAs(first, others);
+  await updateAs(others[0], [first]);
 }

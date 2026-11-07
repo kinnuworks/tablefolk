@@ -4,7 +4,7 @@
 //   node test/e2e.js        (needs SWITCH_URL and SWITCH_REGISTRATION_TOKEN in .env)
 import assert from 'node:assert/strict';
 import { loadEnv } from '../src/env.js';
-import { registerAgent } from '../src/register.js';
+import { registerAgent, openAddressing } from '../src/register.js';
 import { SwitchAgent } from '../src/switch-client.js';
 import { Npc } from '../src/npc.js';
 import { Keeper } from '../src/keeper.js';
@@ -25,7 +25,9 @@ const mira = await registerAgent({ name: 'test-mira', displayName: 'Mira', descr
 const npcC = {};
 for (const n of campaign.npcs) npcC[n.name] = await registerAgent({ name: n.name, displayName: n.displayName, description: n.persona });
 
+await openAddressing(keeperC, Object.values(npcC), { [npcC['duke-aldric'].id]: 'https://tablefolk-seven.vercel.app/img/duke.jpg' });
 const control = connect(keeperC, 'control', []); await control.start();
+const dukeDetail = await control.op('get_agent_detail', { agent_id: npcC['duke-aldric'].id });
 const stamp = 'e2e-' + Date.now().toString(36).slice(-4);
 const state = { rooms: {} };
 for (const [key, room] of Object.entries(campaign.rooms)) {
@@ -52,6 +54,12 @@ for (const room of ['table', 'alley']) {
 const say = async (room, text) => { const t = Date.now(); await playerConns[room].post(state.rooms[room].id, text); return t; };
 const results = [];
 const check = (name, fn) => { fn(); results.push(name); console.log('ok -', name); };
+
+// 0. Players can address the NPCs: the owner-only default is gone, and the portrait is the avatar.
+check('the duke is open to anyone, not only its owner, and has its portrait', () => {
+  assert.equal(dukeDetail.addressing_policy, null);
+  assert.match(dukeDetail.icon_url, /duke\.jpg$/);
+});
 
 // 1. Switch refuses every room an NPC is not in.
 check('Switch answers 403 for the back alley when the duke asks', () => assert.ok(sink.events.some((e) => e.kind === 'denied' && e.agent === 'duke-aldric' && e.room === 'alley' && /403/.test(e.detail))));

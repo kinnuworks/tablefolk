@@ -33,7 +33,10 @@ for (const n of campaign.npcs) npcCreds[n.name] = await registerAgent({ name: n.
 // A new Switch agent answers only its owner, and Switch posts a refusal for anyone
 // else who @mentions it. The players aren't the owner, so open each character to
 // anyone. Who hears what is still decided by room membership, not by this.
-await openAddressing(keeperCreds, Object.values(npcCreds));
+const PORTRAITS = 'https://tablefolk-seven.vercel.app/img/';
+const icons = { [keeperCreds.id]: `${PORTRAITS}favicon.png` };
+for (const n of campaign.npcs) if (n.portrait) icons[npcCreds[n.name].id] = `${PORTRAITS}${n.portrait}`;
+await openAddressing(keeperCreds, Object.values(npcCreds), icons);
 
 // 2. Rooms. Membership is the whole secrecy model: an NPC only hears rooms it is in.
 let state = !args.fresh && fs.existsSync(STATE) ? JSON.parse(fs.readFileSync(STATE, 'utf8')) : null;

@@ -5,17 +5,17 @@ export default {
   setting: 'A wet harbour town. Tonight Duke Aldric hosts a feast in his hall. His signet ring seals every tax writ in Greywater, and half the town wants it gone.',
   npcs: [
     {
-      name: 'duke-aldric', displayName: 'Duke Aldric', call: ['duke', 'aldric', 'your grace', 'my lord'],
+      name: 'duke-aldric', portrait: 'duke.jpg', displayName: 'Duke Aldric', call: ['duke', 'aldric', 'your grace', 'my lord'],
       persona: 'Duke Aldric, ruler of Greywater. Proud, vain, quick to suspect. Loves his gold signet ring and shows it off. Speaks formally.',
       rooms: ['table', 'study'],
     },
     {
-      name: 'captain-voss', displayName: 'Captain Voss', call: ['voss', 'captain'],
+      name: 'captain-voss', portrait: 'voss.jpg', displayName: 'Captain Voss', call: ['voss', 'captain'],
       persona: 'Captain Ilse Voss, the duke\'s guard captain. Blunt, tired, loyal, misses nothing. Speaks in short sentences.',
       rooms: ['table', 'study'],
     },
     {
-      name: 'fen-the-fence', displayName: 'Fen', call: ['fen'],
+      name: 'fen-the-fence', portrait: 'fen.jpg', displayName: 'Fen', call: ['fen'],
       persona: 'Fen, a fence who buys stolen goods in the alley behind the hall. Sly, friendly, greedy, never uses real names.',
       rooms: ['alley'],
     },
