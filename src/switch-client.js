@@ -77,10 +77,24 @@ export class SwitchAgent {
     return res.json().catch(() => ({}));
   }
 
+  /**
+   * Shows or clears "is typing" for this agent in a room. Best effort: a room with
+   * no chat app behind it has nothing to show, and a failure here never stops a reply.
+   * @param {string} roomId @param {boolean} isTyping
+   */
+  async typing(roomId, isTyping) {
+    try {
+      await fetch(`${this.baseUrl}/agents/${this.agentId}/typing`, {
+        method: 'POST', headers: this.headers(), body: JSON.stringify({ room_id: roomId, is_typing: isTyping }),
+      });
+    } catch { /* nothing to show */ }
+  }
+
   /** Opens the stream and resolves with the first connection_state frame. */
   start() {
     const ready = new Promise((resolve) => { this.ready = resolve; });
     this.loop();
+    this.beatMs = BEAT_MS;
     this.beatTimer = setInterval(() => this.beat(), BEAT_MS);
     return ready;
   }
@@ -170,6 +184,13 @@ export class SwitchAgent {
       this.attached = true;
       this.failures = 0;
       if (this.cursor == null) this.cursor = frame.cursor ?? 0;
+      // Beat at the pace the server asks for (2 s on switch-core 0.31.0).
+      const ms = Number(frame.heartbeat_interval_seconds) * 1000;
+      if (ms > 0 && ms !== this.beatMs && !this.stopped) {
+        this.beatMs = ms;
+        clearInterval(this.beatTimer);
+        this.beatTimer = setInterval(() => this.beat(), ms);
+      }
       this.ready?.(frame); this.ready = null;
       return;
     }

@@ -15,7 +15,8 @@
     "coverage": "node --test --experimental-test-coverage --test-coverage-include=src/**/*.js test/unit/",
     "doctor": "node src/doctor.js",
     "eval": "node eval/secrecy.js",
-    "bench": "node eval/latency.js"
+    "bench": "node eval/latency.js",
+    "verify": "node src/verify.js"
   },
   "engines": {
     "node": ">=20"

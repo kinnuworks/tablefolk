@@ -12,6 +12,19 @@ test('an NPC is called by any of its names, as whole words', () => {
   assert.ok(!isCalled(duke, { body: 'The dukedom is old.', sender_name: 'rowan' }));
 });
 
+test('an NPC answers when Switch marks the message addressed to it (@duke alias)', () => {
+  assert.ok(isCalled(duke, { body: '@duke where were you at midnight?', sender_name: 'rowan', addressed: true }));
+  assert.ok(isCalled(duke, { body: 'over here, my friend', sender_name: 'rowan', addressed: true }));
+  assert.ok(!isCalled(duke, { body: 'roll 1d20', sender_name: 'rowan', addressed: true }));
+});
+
+test("the template's kickoff, posted as the Keeper, wakes only the NPC it @mentions", () => {
+  const voss = campaign.npcs.find((n) => n.name === 'captain-voss');
+  const kickoff = { body: '@duke-aldric The guests are seated. Welcome them.', sender_name: 'table-keeper', addressed: true };
+  assert.ok(isCalled(duke, kickoff));
+  assert.ok(!isCalled(voss, kickoff));
+});
+
 test('keeper output and keeper commands never wake an NPC', () => {
   assert.ok(!isCalled(duke, { body: '🎲 the duke rolls 1d20', sender_name: 'table-keeper' }));
   assert.ok(!isCalled(duke, { body: 'aside duke @rowan', sender_name: 'rowan' }));

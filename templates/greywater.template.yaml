@@ -41,31 +41,39 @@ resources:
     group: greywater
     name: "greywater-table-{tag}"
     description: "The feast hall. Everyone at the table hears this."
-    instructions: "Name an NPC to have it answer. roll 1d20+3 rolls dice. hp Mira -4 tracks hit points. aside fen @player opens a private room with that NPC."
+    instructions: "Name an NPC or @mention it (@duke, @voss) to have it answer. roll 1d20+3 rolls dice. hp Mira -4 tracks hit points. aside fen @player opens a private room with that NPC."
     channel_type: channel_public
     agents: [table-keeper, duke-aldric, captain-voss]
+    aliases: {table-keeper: keeper, duke-aldric: duke, captain-voss: voss}
     users: ["{gm}", "{rogue}", "{player2}", "{player3}"]
+    kickoff: "@duke-aldric The guests are seated. Welcome them to your feast in one or two lines."
   study:
     type: room
     group: greywater
     name: "dukes-study-{tag}"
     description: "The duke's private study. Players are not here."
+    instructions: "Only the GM, the duke and the captain are here. Nothing said here reaches the players or Fen."
     channel_type: channel_private
     agents: [table-keeper, duke-aldric, captain-voss]
+    aliases: {table-keeper: keeper, duke-aldric: duke, captain-voss: voss}
     users: ["{gm}"]
   whisper:
     type: room
     group: greywater
     name: "rogue-whisper-{tag}"
     description: "Private notes between the GM and the rogue. No NPC is here."
+    instructions: "No NPC is in this room, so no NPC can know what is planned here. roll works; the roll stays off the party sheet."
     channel_type: channel_private
     agents: [table-keeper]
+    aliases: {table-keeper: keeper}
     users: ["{gm}", "{rogue}"]
   alley:
     type: room
     group: greywater
     name: "back-alley-{tag}"
     description: "The alley behind the hall, where the rogue meets Fen."
+    instructions: "Fen the fence buys stolen goods here. Only the GM, the rogue and Fen hear this room; the duke and the captain never do."
     channel_type: channel_private
     agents: [table-keeper, fen-the-fence]
+    aliases: {table-keeper: keeper, fen-the-fence: fen}
     users: ["{gm}", "{rogue}"]

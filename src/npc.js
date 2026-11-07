@@ -17,12 +17,17 @@ export const isJoinGreeting = (p) => !!p.sender_name && GREETINGS.some((g) => g.
 const MAX_NPC_CHAIN = 0; // NPCs answer people, not each other (raise to let them banter)
 const KEEPER_COMMAND = /^(roll\s+\d*d\d|hp(\s|$)|aside\s)/i;
 
-// Is this line aimed at this NPC? It must name the NPC (or @mention its handle),
-// come from someone other than the Keeper, and not be a Keeper command.
+// Is this line aimed at this NPC? Switch marks a message `addressed` when it
+// @mentions this agent or its room alias (@duke). At a table people also just
+// say a name ("Duke Aldric, may I..."), so naming the NPC counts too.
+// Keeper output and Keeper commands never wake an NPC, except a Keeper line that
+// @mentions it: that is the room template's kickoff, which opens the scene.
 export function isCalled(def, payload) {
   const body = (payload.body || '').trim();
-  if (!body || payload.sender_name === 'table-keeper' || KEEPER_COMMAND.test(body)) return false;
+  if (!body || KEEPER_COMMAND.test(body)) return false;
   const text = body.toLowerCase();
+  if (payload.sender_name === 'table-keeper') return text.includes(`@${def.name}`);
+  if (payload.addressed === true) return true;
   return def.call.some((c) => new RegExp(`(^|[^a-z])${c}([^a-z]|$)`).test(text)) || text.includes(`@${def.name}`);
 }
 
@@ -161,18 +166,22 @@ export class Npc {
     if (this.busy || !this.pending) return;
     this.busy = true;
     const turn = this.pending; this.pending = null;
+    const conn = this.conns.get(turn.roomId);
     try {
+      // The model takes a moment, so the chat shows "Duke Aldric is typing" meanwhile.
+      conn.typing?.(turn.roomId, true);
       // Small local models sometimes return nothing; one more try usually gets a line.
       const line = (await this.reply(turn)) || (await this.reply(turn));
       if (!line) console.error(`[${this.def.displayName}] the model returned nothing twice; skipping this turn`);
       if (line) {
-        await this.conns.get(turn.roomId).post(turn.roomId, line);
+        await conn.post(turn.roomId, line);
         // A stream doesn't echo an agent's own posts, so the NPC remembers its own line here.
         this.remember({ room: turn.room, who: this.def.displayName, text: line });
       }
     } catch (e) {
       console.error(`[${this.def.displayName}] ${e.message}`);
     } finally {
+      conn.typing?.(turn.roomId, false);
       this.busy = false;
       if (this.pending) this.drain();
     }

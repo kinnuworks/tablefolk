@@ -5,7 +5,8 @@ import http from 'node:http';
 import { SwitchAgent } from '../../src/switch-client.js';
 
 function fakeBridge() {
-  const seen = { opens: [], beats: 0, ops: [], posts: [] };
+  const seen = { opens: [], beats: 0, ops: [], posts: [], typing: [] };
+  let beatEvery = null;
   let stream = null, opFailures = 0, beatStatus = 200, openStatus = 200;
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://x');
@@ -14,7 +15,7 @@ function fakeBridge() {
       seen.opens.push({ q: Object.fromEntries(url.searchParams), lastEventId: req.headers['last-event-id'] ?? null, at: Date.now() });
       if (openStatus !== 200) { res.writeHead(openStatus); return res.end('{"detail":"Internal Server Error"}'); }
       res.writeHead(200, { 'content-type': 'text/event-stream' });
-      res.write(`event: connection_state\ndata: ${JSON.stringify({ rooms: url.searchParams.get('rooms')?.split(',') ?? [], cursor: 7 })}\n\n`);
+      res.write(`event: connection_state\ndata: ${JSON.stringify({ rooms: url.searchParams.get('rooms')?.split(',') ?? [], cursor: 7, ...(beatEvery ? { heartbeat_interval_seconds: beatEvery } : {}) })}\n\n`);
       stream = res;
       return;
     }
@@ -27,6 +28,7 @@ function fakeBridge() {
         if (opFailures > 0) { opFailures--; res.writeHead(409); return res.end('{"detail":"connection x is not open; reconnect and resume"}'); }
         res.writeHead(200); return res.end(JSON.stringify({ result: { ok: true } }));
       }
+      if (url.pathname.endsWith('/typing')) { seen.typing.push(JSON.parse(body)); res.writeHead(200); return res.end('{}'); }
       if (url.pathname.endsWith('/message')) { seen.posts.push(JSON.parse(body)); res.writeHead(200); return res.end('{}'); }
       res.writeHead(404); res.end();
     });
@@ -41,6 +43,7 @@ function fakeBridge() {
     openWith: (s) => (openStatus = s),
     failOps: (n) => (opFailures = n),
     beatWith: (s) => (beatStatus = s),
+    beatEvery: (sec) => (beatEvery = sec),
     listen: () => new Promise((r) => server.listen(0, '127.0.0.1', () => r(`http://127.0.0.1:${server.address().port}`))),
   };
 }
@@ -175,4 +178,21 @@ test('CRLF line endings and keepalive comments are handled', async (t) => {
   await until(() => got.length === 1);
   assert.deepEqual(got, ['crlf']);
   assert.equal(a.cursor, 20);
+});
+
+test('beats at the interval the server asks for in connection_state', async (t) => {
+  const b = fakeBridge(); b.beatEvery(0.1); const url = await b.listen(); t.after(() => b.server.close());
+  const a = new SwitchAgent({ baseUrl: url, agentId: 'A', apiKey: 'key-1', name: 'duke', rooms: ['R1'] });
+  await a.start(); t.after(() => a.stop());
+  assert.equal(a.beatMs, 100);
+  await until(() => b.seen.beats >= 3, 1500);
+});
+
+test('typing sends is_typing for the room, and a failure never throws', async (t) => {
+  const b = fakeBridge(); const url = await b.listen(); t.after(() => b.server.close());
+  const a = new SwitchAgent({ baseUrl: url, agentId: 'A', apiKey: 'key-1', name: 'duke', rooms: ['R1'] });
+  await a.typing('R1', true); await a.typing('R1', false);
+  assert.deepEqual(b.seen.typing, [{ room_id: 'R1', is_typing: true }, { room_id: 'R1', is_typing: false }]);
+  const gone = new SwitchAgent({ baseUrl: 'http://127.0.0.1:1', agentId: 'A', apiKey: 'key-1', name: 'duke', rooms: [] });
+  await gone.typing('R1', true);
 });

@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import { parseArgs } from 'node:util';
 import { loadEnv } from './env.js';
-import { registerAgent } from './register.js';
+import { registerAgent, openAddressing } from './register.js';
 import { SwitchAgent } from './switch-client.js';
 import { Npc } from './npc.js';
 import { Keeper } from './keeper.js';
@@ -29,6 +29,11 @@ const connect = (creds, name, rooms) =>
 const keeperCreds = await registerAgent({ name: 'table-keeper', displayName: 'Keeper', description: 'Tablefolk keeper: dice, hit points, and side rooms. No model, just code.' });
 const npcCreds = {};
 for (const n of campaign.npcs) npcCreds[n.name] = await registerAgent({ name: n.name, displayName: n.displayName, description: n.persona });
+
+// A new Switch agent answers only its owner, and Switch posts a refusal for anyone
+// else who @mentions it. The players aren't the owner, so open each character to
+// anyone. Who hears what is still decided by room membership, not by this.
+await openAddressing(keeperCreds, Object.values(npcCreds));
 
 // 2. Rooms. Membership is the whole secrecy model: an NPC only hears rooms it is in.
 let state = !args.fresh && fs.existsSync(STATE) ? JSON.parse(fs.readFileSync(STATE, 'utf8')) : null;
