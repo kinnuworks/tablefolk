@@ -26,7 +26,9 @@ const script = [
   ['tomas', 'table', 'Captain Voss, your guards look bored. Fancy a quick game of dice by the fire?'],
   ['mira', 'whisper', 'While everyone watches the dice, I try to slip the ring off his finger.'],
   ['mira', 'whisper', 'roll 1d20+6'],
-  ['gm', 'whisper', 'Clean. The ring slides off the duke\'s finger and into your sleeve. Nobody at the table saw it.'],
+  ['gm', 'whisper', (roll) => roll >= 15
+    ? `${roll}. Clean. The ring slides off the duke's finger and into your sleeve. Nobody at the table saw it.`
+    : `${roll}. Your fingers fumble at the knuckle, but Tomas has the captain laughing. The ring comes free and nobody looks your way.`],
   ['mira', 'alley', "Fen, I lifted the duke's signet ring during the toast. What will you give me for it?"],
   ['tomas', 'table', 'A toast to Duke Aldric, and to the famous ring of Greywater!'],
   ['gm', 'study', 'Later, in his study, Duke Aldric reaches for his seal and finds his finger bare. Captain Voss is standing by the door.'],
@@ -66,7 +68,10 @@ for (const p of Object.values(people)) {
   }
 }
 console.log(`Playing ${script.length} beats. NPC voices: ${provider}. Recording to ${recorder.file}`);
-for (const [who, room, text] of script) {
+let lastRoll = 0;
+keeper.say = ((orig) => (roomId, text) => { const m = text.match(/= \*\*(\d+)\*\*/); if (m) lastRoll = Number(m[1]); return orig.call(keeper, roomId, text); })(keeper.say);
+for (const [who, room, line] of script) {
+  const text = typeof line === 'function' ? line(lastRoll) : line;
   console.log(`[${room}] ${people[who].displayName}: ${text}`);
   await conns[who][room].post(state.rooms[room].id, text);
   await wait(1500);

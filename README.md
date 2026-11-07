@@ -24,7 +24,7 @@ echo "ANTHROPIC_API_KEY=<key>" >> .env      # or leave it out to use Ollama (gem
 npm run table -- --gm sam --rogue rowan --players rowan,juno
 ```
 
-`npm run table` registers the Keeper and the three NPCs as Switch agents, creates the four rooms on Mattermost with the right people and agents in each, and runs every agent. Then play in Mattermost:
+`npm run table` registers the Keeper and the three NPCs as Switch agents, runs the Switch room template to create the four rooms on Mattermost as one linked group with the right people and agents in each, and runs every agent. Then play in Mattermost:
 
 - Talk to an NPC by name: `Duke Aldric, may I see your ring?`
 - `roll 1d20+3` rolls dice. `hp Mira -4` tracks hit points. The Keeper does both in code.
@@ -45,7 +45,7 @@ Without people around, `npm run demo` plays a short scripted scene with stand-in
 - `src/npc.js` is the NPC. Its memory is the list of messages its own connections delivered. That list is all its prompt contains, so it can't leak a room it was never sent. When it starts, it asks Switch for every room it is not in and records the refusal.
 - `src/keeper.js` is an agent with no model. Dice, hit points and side rooms are rules, so they run in code.
 - `src/recorder.js` writes one line per delivery: which agent received which message, in which room. The replay page reads this, so "through the duke's eyes" is what the duke's agent was actually sent.
-- `templates/greywater.template.yaml` is the same table as a Switch room template: four rooms in one linked group, with the existing NPC agents seated in them.
+- `templates/greywater.template.yaml` is the Switch room template `npm run table` runs: four rooms in one linked group, with the existing NPC agents seated in them. Without people (`npm run demo`, `npm test`) the rooms are agent-only and made one by one.
 
 ## Tests
 
@@ -56,11 +56,12 @@ Without people around, `npm run demo` plays a short scripted scene with stand-in
 - the duke answers at the table and Fen answers in the alley,
 - the alley message never reaches the duke or the captain.
 
-On a local Switch server with a local gemma4 model, NPC replies in the test took about 3 to 4.5 seconds.
+How fast an NPC answers depends on the model. In the e2e test, with a local gemma4 model, replies took about 3 to 4.5 seconds. In the recorded replay, which used a hosted model called through a command-line tool, they took about 6.5 to 9 seconds.
 
 ## Limits
 
 - One campaign so far: "The Signet at Greywater".
 - NPCs answer when someone names them. They don't speak up on their own, and they don't banter with each other (that's one constant in `src/npc.js`).
-- Small local models write weaker lines than a hosted model. The recorded demo used a hosted model.
+- Small local models write weaker lines than a hosted model. The recorded replay used a hosted model.
+- Player and GM lines in the replay are scripted (`npm run demo`). Every NPC line was written live by that NPC's agent.
 - Switch posts a short "tag me" greeting when an agent joins a chat room. Tablefolk keeps it out of NPC memory, but the players will see it once.

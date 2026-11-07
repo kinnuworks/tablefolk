@@ -36,17 +36,33 @@ const control = connect(keeperCreds, 'keeper-control', []);
 await control.start();
 if (!state) {
   state = { rooms: {}, startedAt: new Date().toISOString() };
-  const stamp = Date.now().toString(36).slice(-4);
-  for (const [key, room] of Object.entries(campaign.rooms)) {
-    const humans = room.humans.flatMap((h) => (h === 'gm' ? [args.gm] : h === 'players' ? players : h === 'rogue' ? [args.rogue] : [h])).filter(Boolean);
-    const agents = ['table-keeper', ...campaign.npcs.filter((n) => n.rooms.includes(key)).map((n) => n.name)];
-    const made = await control.op('create_room', {
-      name: `${room.title}-${stamp}`, description: room.about, agent_names: agents,
-      user_names: humans.length ? [...new Set(humans)] : null,
-      channel_type: room.private ? 'channel_private' : null,
+  const tag = Date.now().toString(36).slice(-4);
+  const template = new URL(`../templates/${args.campaign}.template.yaml`, import.meta.url);
+  if (args.gm && args.rogue && fs.existsSync(template)) {
+    // People are in the game: build the table from the Switch room template, as one linked group.
+    const [player2 = '', player3 = ''] = players.filter((p) => p !== args.rogue);
+    const made = await control.op('create_room_from_yaml', {
+      yaml: fs.readFileSync(template, 'utf8'), inputs: { gm: args.gm, rogue: args.rogue, player2, player3, tag },
     });
-    state.rooms[key] = { id: made.id, name: made.name, title: room.title, about: room.about, agents, humans };
-    console.log(`room ${made.name}: agents ${agents.join(', ')}; people ${humans.join(', ') || '(none)'}`);
+    if (made.errors?.length) throw new Error(`template: ${JSON.stringify(made.errors)}`);
+    for (const r of made.rooms) {
+      const key = Object.keys(campaign.rooms).find((k) => r.room_name?.startsWith(`${campaign.rooms[k].title}-`));
+      if (!key) continue;
+      const room = campaign.rooms[key];
+      const agents = ['table-keeper', ...campaign.npcs.filter((n) => n.rooms.includes(key)).map((n) => n.name)];
+      const humans = room.humans.flatMap((h) => (h === 'gm' ? [args.gm] : h === 'players' ? players : h === 'rogue' ? [args.rogue] : [h]));
+      state.rooms[key] = { id: r.room_id, name: r.room_name, title: room.title, about: room.about, agents, humans: [...new Set(humans)] };
+      console.log(`room ${r.room_name}: agents ${agents.join(', ')}; people ${[...new Set(humans)].join(', ')}`);
+    }
+    console.log(`made from the Switch template "${args.campaign}" as group ${made.group_name}`);
+  } else {
+    // No people given: agent-only rooms, created one by one.
+    for (const [key, room] of Object.entries(campaign.rooms)) {
+      const agents = ['table-keeper', ...campaign.npcs.filter((n) => n.rooms.includes(key)).map((n) => n.name)];
+      const made = await control.op('create_room', { name: `${room.title}-${tag}`, description: room.about, agent_names: agents, internal_only: true });
+      state.rooms[key] = { id: made.id, name: made.name, title: room.title, about: room.about, agents, humans: [] };
+      console.log(`room ${made.name}: agents ${agents.join(', ')}`);
+    }
   }
   fs.writeFileSync(STATE, JSON.stringify(state, null, 2));
   state.fresh = true;

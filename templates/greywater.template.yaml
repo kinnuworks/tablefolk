@@ -45,7 +45,6 @@ resources:
     channel_type: channel_public
     agents: [table-keeper, duke-aldric, captain-voss]
     users: ["{gm}", "{rogue}", "{player2}", "{player3}"]
-    kickoff: "The feast in Duke Aldric's hall has begun. Players, introduce your characters. GM, set the scene."
   study:
     type: room
     group: greywater
